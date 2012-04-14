@@ -5,7 +5,6 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-import java.util.logging.Level;
 import java.io.Serializable;
 
 

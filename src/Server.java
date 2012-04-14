@@ -1,23 +1,18 @@
 /**
- * @descriptrion.
+ * @description.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
-
-import javax.naming.CannotProceedException;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -34,12 +29,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     /**
      * This variable is to ensure that Collector generates unique request id.
      */
-    private Integer maxTaskId;
+    private Integer maxJobId;
+    
+    private ServerStats serverStats;
     
     /**
-     * Contains registered File server list.
+     * Contains registered Compute node list.
      */
-    private List<Pair<Integer,String>> myComputeNodesList;
+    private List<Pair<Integer, String>> myComputeNodesList;
+    
+    Map<Integer, Boolean> heartBeatStatus = new ConcurrentHashMap<Integer, Boolean>();
 
 
     public Server() throws Exception {
@@ -47,7 +46,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINER, "Server started.");
         
         maxComputeNodeId = 0;
-        maxTaskId = 0;
+        maxJobId = 0;
         
         myComputeNodesList = new ArrayList<Pair<Integer,String>> ();
     }
@@ -65,7 +64,59 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public List<Pair<Integer, String>> getActiveNodes() throws RemoteException {
         return myComputeNodesList;
     }
+    
+    private class TaskHandler extends Thread{
+       
+        public Integer jobId;
+        public String filePath;
+        private List<Task> tasks;
+        
+        public void run() {
+            // calls the methods in appropriate order 'map','reduce'
+        }
+        
+        
+        private void scheduleMapJob() {
+            // can use split command to split data in terms lines.
+            // convention: file name jobid_taskid
+        }
+        
+        private void scheduleReduceJob() {
+            
+        }
+        
+        private void taskStatusChecker() {
+            
+        }
+        
+        private void reassignTask() {
+            
+        }
+    }
+    
+    /**
+     * Releases node if server didn't listen to heart beat message.
+     * 
+     * @param nodeId
+     */
+    private void releaseNode(Integer nodeId) {
+        // remove entry
+    }
 
+    @Override
+    public void heartBeatMsg(Integer nodeId)  throws RemoteException{
+        // put true flag
+    }
+    
+    @Override
+    public Boolean submitJob() throws RemoteException {
+        return false;
+    }
+    
+    @Override
+    public String getServerStats() throws RemoteException {
+        return "";
+    }
     /**
      * The good stuff.
      */

@@ -17,5 +17,16 @@ public interface ServerInterface extends Remote {
 
     /**
      */
-    List<Pair<Integer,String>> getActiveNodes() throws RemoteException;
+    public List<Pair<Integer,String>> getActiveNodes() throws RemoteException;
+    
+    /**
+     */
+    public Boolean submitJob() throws RemoteException;
+    
+    /**
+     */
+    public void heartBeatMsg(Integer nodeId) throws RemoteException;
+    
+    public String getServerStats() throws RemoteException;
+    
 }

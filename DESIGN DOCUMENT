@@ -1,0 +1,41 @@
+
+
+Questions:
+----------
+Q)Does server needs to be informed while transferring job?
+A) IMO, yes. Because server is responsible for fault-tolerance.
+
+
+
+Design:
+File is transferred separately (to handle cases where data is not fit into main memory)
+
+
+
+Configuration:
+--------------
+
+
+
+Assumptions:
+-----------
+Data format
+
+ 
+
+Simple test cases:
+-----------------
+Sorting one value
+sorting 10 values
+duplicate values
+
+Print node stats
+Print task stats
+
+
+
+
+Terminalogy:
+Job: client submits the job
+Task: A Job is splitted into tasks.
+

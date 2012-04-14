@@ -11,4 +11,5 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
 
+    public void jobResponse(TaskStats stats, String outputFilePath) throws RemoteException;
 }
