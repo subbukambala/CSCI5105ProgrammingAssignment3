@@ -1,0 +1,29 @@
+
+
+
+(https://github.com/chaosape/CSCI5105ProgrammingAssignment3)
+Authors: Daniel William DaCosta, Bala Subrahmanyam Kambala
+-------
+License: GPLv3 (http://www.gnu.org/copyleft/gpl.html), 2012
+-------
+Description: The following code was done as an assignment for CSCI5105 at the
+University of Minnesota. 
+
+
+Authors Details:
+--------
+1) Daniel William DaCosta
+   Student ID:4433217
+   email: chaosape@gmail.com
+
+2) Bala Subrahmanyam Kambala
+   Student ID: 4451379
+   email: kamb0024@umn.edu
+
+
+TO BUILD:
+---------
+cd src/
+make clean
+make
+
