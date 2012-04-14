@@ -7,13 +7,19 @@
 
 import java.rmi.*;
 import java.rmi.server.*;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.Exception;
+import java.net.MalformedURLException;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInterface {
 
@@ -67,25 +73,77 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     }
     
     @Override
-    public void executeTask(Task t) throws RemoteException {
-        // check load
-        // Write threaded code
+    public void executeTask(Task task) throws RemoteException {
         
-        // call sort/merge based on task type
+        Double load = getCurrentLoad();
+        if (load > overLoadThreshold) {
+            List<Pair<Integer, String> > computeNodes = server.getActiveNodes();
+            
+            for (Integer i = 0; i < computeNodes.size(); i++) {
+                if (computeNodes.get(i).fst() != id) {
+                    ComputeNodeInterface c;
+                    try {
+                        c = (ComputeNodeInterface) Naming.lookup("//" + computeNodes.get(i).snd()
+                                + "/ComputeNode");
+
+                        // Requesting node to take up the task 
+                        Boolean isAccepted = c.taskTransferRequest(task);
+                        
+                        // If transfer request is accepted, update server
+                        if (isAccepted) {
+                            task.setNode(computeNodes.get(i));
+                            server.updateTaskTransfer(task);
+                            return;
+                        }
+                    } catch (MalformedURLException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (NotBoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    
+                }
+            }
+        }
+    
+        //
+        // If node couldn't transfer or load is less than overLoadThreshold, 
+        // spawns worker thread.
+        //
+        Thread t = new TaskExecutor(task);
+        t.start();
+    
+    }
+    
+    private class TaskExecutor extends Thread {
+        Task myTask;
+        public TaskExecutor(Task t) {
+            myTask = t;
+        }
+        
+        public void run() {
+            if (myTask.getCurrentTaskType().equals(Task.TaskType.MAP)) {
+                sort();
+            }
+            else {
+                merge();
+            }
+        }
     }
    
     /**
      * map task
      */
     private void sort() {
-        
+        System.out.println("Sorting...");
     }
     
     /**
      * reduce task
      */
     private void merge() {
-        
+        System.out.println("Merging...");
     }
     
     /**
@@ -100,16 +158,58 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     /**
      * Internal method to get load
      */
-    private void getCurrentLoad()  {
+    private Double getCurrentLoad()  {
         // can be a simulated load or command output
         // can use taskCount
+        
+        Double currLoad = 0d;
+        try {
+            Process p = Runtime.getRuntime().exec("uptime");
+
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(p.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new
+                    InputStreamReader(p.getErrorStream()));
+
+            // read the output from the command
+
+            // 11:57:57 up 29 min,  2 users,  load average: 0.27, 0.12, 0.09
+            
+            String s;
+            System.out.println("Here is the standard output of the command:\n");
+
+            s = stdInput.readLine();
+            s = s.replace(':', ',');
+            
+            String data[] = s.split(",");
+           
+            currLoad = Double.parseDouble(data[data.length - 2]);
+            
+            System.out.println(currLoad);
+            
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        
+        return currLoad * 100;
     }
     
     @Override
-    public Boolean taskRequest() throws RemoteException {
-        // returns yes/no based on load
+    public Boolean taskTransferRequest(Task task) throws RemoteException {
         
-        return null;
+        Double load =  getCurrentLoad();
+        
+        lg.log(Level.FINER, "currLoad :" + load + " expectedLoad: " + 
+                task.getExpectedLoad() + " overLoadThreshold :" + overLoadThreshold);
+        
+        
+        if (load + task.getExpectedLoad() > overLoadThreshold) {
+            return false;
+        }
+        
+        // spawn task request...
+        return true;
     }
     
     @Override
@@ -153,9 +253,9 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
         if (commandLine.getArgs().length != 0)
             fileservername = commandLine.getArgs()[0];
         try {
-            ComputeNode fileserver = new ComputeNode(fileservername, underLoad, overLoad);
+            ComputeNode node = new ComputeNode(fileservername, underLoad, overLoad);
             
-            Naming.rebind("FileServer" + Integer.toString(fileserver.getID()), fileserver);
+            Naming.rebind("ComputeNode" + Integer.toString(node.getID()), node);
         } catch (Exception e) {
             System.out.println("FileServer exception: ");
             e.printStackTrace();

@@ -53,9 +53,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     @Override
     synchronized public Integer registerNode() throws Exception {
-        lg.log(Level.FINER, "File server joined.");
-
+        
         maxComputeNodeId++;
+        
+        lg.log(Level.FINER, "ComputeNode " + maxComputeNodeId + "joined.");
+        
         myComputeNodesList.add(new Pair<Integer, String>(maxComputeNodeId, getClientHost()));
         return maxComputeNodeId;
     }
@@ -117,6 +119,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public String getServerStats() throws RemoteException {
         return "";
     }
+    
+    @Override
+    public void updateTaskTransfer(Task task) throws RemoteException {
+        // Increment task migration
+        
+        
+    }
+    
     /**
      * The good stuff.
      */

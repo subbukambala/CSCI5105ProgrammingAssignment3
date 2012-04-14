@@ -7,16 +7,26 @@
 
 public class Task {
 
-    Integer taskId;
+    private Integer taskId;
     
-    ComputeNodeInterface node;
+    private Pair<Integer, String> node;
     
-    Integer dataStartLine;
-    Integer dataEndLine;
+    private Integer dataStartLine;
+    private Integer dataEndLine;
     
     public enum TaskType {MAP, REDUCE};
     
-    Integer currentTaskType;
+    private Integer currentTaskType;
+    
+    private Double expectedLoad;
+
+    public Double getExpectedLoad() {
+        return expectedLoad;
+    }
+
+    public void setExpectedLoad(Double expectedLoad) {
+        this.expectedLoad = expectedLoad;
+    }
 
     public Integer getCurrentTaskType() {
         return currentTaskType;
@@ -34,11 +44,11 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public ComputeNodeInterface getNode() {
+    public Pair<Integer, String>  getNode() {
         return node;
     }
 
-    public void setNode(ComputeNodeInterface node) {
+    public void setNode(Pair<Integer, String>  node) {
         this.node = node;
     }
 

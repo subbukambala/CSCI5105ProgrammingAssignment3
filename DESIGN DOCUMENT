@@ -10,6 +10,11 @@ A) IMO, yes. Because server is responsible for fault-tolerance.
 Design:
 File is transferred separately (to handle cases where data is not fit into main memory)
 
+a compute node daemon which will take care of all the load 
+balancing and communications with the server. . You can then spawn worker threads to 
+do the actual sorting part assigned to the compute node.
+
+Draw design diagram
 
 
 Configuration:

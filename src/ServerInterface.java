@@ -29,4 +29,9 @@ public interface ServerInterface extends Remote {
     
     public String getServerStats() throws RemoteException;
     
+    /**
+     * 
+     */
+    public void updateTaskTransfer(Task task) throws RemoteException;
+    
 }
