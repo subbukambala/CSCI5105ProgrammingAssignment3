@@ -102,7 +102,6 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    
                 }
             }
         }
@@ -177,7 +176,7 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
             // 11:57:57 up 29 min,  2 users,  load average: 0.27, 0.12, 0.09
             
             String s;
-            System.out.println("Here is the standard output of the command:\n");
+            //System.out.println("Here is the standard output of the command:\n");
 
             s = stdInput.readLine();
             s = s.replace(':', ',');
@@ -186,7 +185,7 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
            
             currLoad = Double.parseDouble(data[data.length - 2]);
             
-            System.out.println(currLoad);
+            lg.log(Level.FINER, " Load :" + currLoad);
             
         } catch(IOException e) {
             e.printStackTrace();
@@ -217,6 +216,29 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
         return "";
     }
     
+    @Override
+    public void transferData(DataTransferInterface DTI,
+            Integer maxBufferWindow,
+            String srcFilePath,
+            String destFilePath) throws RemoteException 
+    {
+        DataTransferHandler d = new DataTransferHandler();
+        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+    }
+
+    @Override
+    public void storeData(String data, String filePath) throws RemoteException {
+        DataTransferHandler d = new DataTransferHandler();
+        d.storeData(data, filePath);
+    }
+
+    @Override
+    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException {
+        // Start executing task
+
+        System.out.println("data transfer is complete");
+    }
+
     public static void main(String[] argv) {
 
         String fileservername = "localhost";

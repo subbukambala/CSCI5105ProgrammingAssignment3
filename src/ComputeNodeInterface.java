@@ -8,7 +8,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.security.NoSuchAlgorithmException;
 
-public interface ComputeNodeInterface extends Remote {
+public interface ComputeNodeInterface extends Remote, DataTransferInterface {
 
     /**
      * This method is called by Server. 

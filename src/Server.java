@@ -5,6 +5,12 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -73,10 +79,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         public String filePath;
         private List<Task> tasks;
         
-        public void run() {
-            // calls the methods in appropriate order 'map','reduce'
+        public TaskHandler(Integer _jobId, String _filePath) {
+            jobId = _jobId;
+            filePath = _filePath;
         }
         
+        public void run() {
+            // calls the methods in appropriate order 'map','reduce'
+            
+        }
         
         private void scheduleMapJob() {
             // can use split command to split data in terms lines.
@@ -94,6 +105,27 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         private void reassignTask() {
             
         }
+    }
+    
+    public void transferData(DataTransferInterface DTI, 
+                             Integer maxBufferWindow, 
+                             String srcFilePath, 
+                             String destFilePath) throws RemoteException
+    {
+        DataTransferHandler d = new DataTransferHandler();
+        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+    }
+    
+    public void storeData(String data, String filePath) throws RemoteException {
+        DataTransferHandler d = new DataTransferHandler();
+        d.storeData(data, filePath);
+    }
+    
+    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException {
+        //Thread t =  new TaskHandler(jobId, filePath);
+        //t.start();
+        
+        System.out.println("data transfer is complete");
     }
     
     /**

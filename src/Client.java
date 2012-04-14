@@ -5,6 +5,12 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.logging.Level;
@@ -51,6 +57,26 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      */
     private void getNodeStats() {
         
+    }
+    
+    public void transferData(
+            DataTransferInterface DTI,
+            Integer maxBufferWindow,
+            String srcFilePath,
+            String destFilePath) throws RemoteException 
+    {
+        DataTransferHandler d = new DataTransferHandler();
+        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+    }
+
+    public void storeData(String data, String filePath) throws RemoteException {
+        DataTransferHandler d = new DataTransferHandler();
+        d.storeData(data, filePath);
+    }
+
+    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException {
+        // print sorted data here
+        System.out.println("data transfer is complete");
     }
     
     /**
