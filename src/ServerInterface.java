@@ -8,7 +8,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.List;
 
-public interface ServerInterface extends Remote, DataTransferInterface {
+public interface ServerInterface extends Remote {
     
     /**
      * File server joins in network to serve collaborative document edit
@@ -19,10 +19,6 @@ public interface ServerInterface extends Remote, DataTransferInterface {
      */
     public List<Pair<Integer,String>> getActiveNodes() throws RemoteException;
     
-    /**
-     */
-    public Boolean submitJob(Integer clientId, Integer jobId, String filePath) throws RemoteException;
-
     /**
      */
     public Boolean submitJob(List<Integer> dtata) throws RemoteException;
@@ -37,16 +33,4 @@ public interface ServerInterface extends Remote, DataTransferInterface {
      * 
      */
     public void updateTaskTransfer(Task task) throws RemoteException;
-    
-    
-    /**
-     * 
-     */
-    public void storeData(String data, String filePath) throws RemoteException;
-    
-    /**
-     * This method is called by client on data transferComplete
-     */
-    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException;
-    
 }

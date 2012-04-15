@@ -110,28 +110,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
     
-    public void transferData(DataTransferInterface DTI, 
-                             Integer jobId,
-                             Integer maxBufferWindow, 
-                             String srcFilePath, 
-                             String destFilePath) throws RemoteException
-    {
-        DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
-    }
-    
-    public void storeData(String data, String filePath) throws RemoteException {
-        DataTransferHandler d = new DataTransferHandler();
-        d.storeData(data, filePath);
-    }
-    
-    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException {
-        //Thread t =  new TaskHandler(jobId, filePath);
-        //t.start();
-        
-        System.out.println("data transfer is complete");
-    }
-    
     /**
      * Releases node if server didn't listen to heart beat message.
      * 
@@ -161,30 +139,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
     
-    @Override
-    public Boolean submitJob(Integer clientId, Integer jobId, String filePath) throws RemoteException {
-        
-        ClientInterface c;
-        try {
-            c = (ClientInterface) Naming.lookup("//" + getClientHost() + "/Client" + clientId);
-            c.transferData(this, jobId, 1024, filePath, "../data/server/NGramLZOProcessor.java");
-            
-            
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ServerNotActiveException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        return false;
-    }
-
-
     @Override 
     public Boolean submitJob(List<Integer> data)
     {

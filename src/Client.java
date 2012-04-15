@@ -32,12 +32,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     Client(String servername ) throws Exception {
         server = (ServerInterface) 
             Naming.lookup("//" + servername + "/Server");
+        
         lg = new Logger("Client");
         lg.log(Level.FINER, "Client started.");
     }
 
     @Override
-        public void jobResponse(TaskStats stats, String outputFilePath) throws RemoteException {
+    public void jobResponse(TaskStats stats, String outputFilePath) throws RemoteException {
         // prints job stats
     }
 
@@ -87,32 +88,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
     }
 
-    public void transferData(
-                             DataTransferInterface DTI,
-                             Integer maxBufferWindow,
-                             Integer jobId,
-                             String srcFilePath,
-                             String destFilePath) throws RemoteException
-
-    {
-        DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
-        
-        DTI.onDataTransferComplete(jobId, destFilePath);
-    }
-
-    public void storeData(String data, String filePath) 
-        throws RemoteException {
-        DataTransferHandler d = new DataTransferHandler();
-        d.storeData(data, filePath);
-    }
-
-    public void onDataTransferComplete(Integer jobId, String filePath) 
-        throws RemoteException {
-        // print sorted data here
-        System.out.println("data transfer is complete");
-    }
- 
     /**
      *
      */
@@ -127,7 +102,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         boolean serverStatsSwitch = false;
         ArgumentHandler cli = new ArgumentHandler
             (
-             "Client [-h|-n|-s] [Server address]  "
+             "Client [-h|-n|-s] [Server address] [-f filename] "
              ,
              "A Client interface to Programming Assignment 3 for CSci5105."
              +" This client serves three primary objectives: 1) Submission"
@@ -161,7 +136,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         if (commandLine.getArgs().length == 1)
             server = commandLine.getArgs()[0];
         else {
-            cli.usage("Client only accepts one argument!");
+            cli.usage("Client only accepts one argument!\n\n");
             System.exit(1);
         }
 
@@ -206,7 +181,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         try {
             client = new Client(server);
             Naming.rebind("Client", client);
-            if ( fileSwitch ) client.submitJob(filepath);
+            if ( fileSwitch ) {
+                client.submitJob(filepath);
+            }
         } catch (Exception e) {
             System.out.println("Client failed: ");
             e.printStackTrace();

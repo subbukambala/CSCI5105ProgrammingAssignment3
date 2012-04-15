@@ -235,31 +235,6 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
         return "";
     }
     
-    @Override
-    public void transferData(
-            DataTransferInterface DTI,
-            Integer jobId, 
-            Integer maxBufferWindow,
-            String srcFilePath,
-            String destFilePath) throws RemoteException 
-    {
-        DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
-    }
-
-    @Override
-    public void storeData(String data, String filePath) throws RemoteException {
-        DataTransferHandler d = new DataTransferHandler();
-        d.storeData(data, filePath);
-    }
-
-    @Override
-    public void onDataTransferComplete(Integer jobId, String filePath) throws RemoteException {
-        // Start executing task
-
-        System.out.println("data transfer is complete");
-    }
-
     public static void main(String[] argv) {
 
         String fileservername = "localhost";
