@@ -19,7 +19,7 @@ public class Task {
     
     public enum TaskType {MAP, REDUCE};
     
-    private Integer currentTaskType;
+    private TaskType currentTaskType;
     
     private Double expectedLoad;
 
@@ -31,11 +31,11 @@ public class Task {
         this.expectedLoad = expectedLoad;
     }
 
-    public Integer getCurrentTaskType() {
+    public TaskType getCurrentTaskType() {
         return currentTaskType;
     }
 
-    public void setCurrentTaskType(Integer currentTaskType) {
+    public void setCurrentTaskType(TaskType currentTaskType) {
         this.currentTaskType = currentTaskType;
     }
 

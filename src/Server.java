@@ -207,6 +207,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             ttask = new Task();
             myMaxTaskId++;
             ttask.setTaskId(myMaxTaskId);
+            ttask.setCurrentTaskType(Task.TaskType.MAP);
             ttask.setData(tdata);
             myTasks.add(ttask);
             lg.log(Level.FINER, "submitJob(list): Added a task with "
@@ -219,6 +220,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
         ttask = new Task();
         myMaxTaskId++;
+        ttask.setCurrentTaskType(Task.TaskType.MAP);
         ttask.setTaskId(myMaxTaskId);
         ttask.setData(tdata);
         myTasks.add(ttask);
