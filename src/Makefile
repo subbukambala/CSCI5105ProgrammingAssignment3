@@ -45,7 +45,7 @@ CLASSES = \
 	ArgumentHandler.java \
 	Request.java \
 	Response.java \
-  	ServerInterface.java \
+  ServerInterface.java \
 	Server.java \
 	ComputeNodeInterface.java \
 	ComputeNode.java \
