@@ -35,9 +35,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     /**
      * This variable is to ensure that Collector generates unique request id.
      */
-    private Integer maxJobId;
+    private Integer myMaxTaskId;
     
-    private ServerStats serverStats;
+    private ServerStats myServerStats;
+    
+    private List<Task> myTasks;
     
     /**
      * Contains registered Compute node list.
@@ -55,9 +57,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINER, "Server started.");
         
         maxComputeNodeId = 0;
-        maxJobId = 0;
+        myMaxTaskId = 0;
+        myServerStats =  new ServerStats();
         
         myComputeNodesList = new ArrayList<Pair<Integer,String>> ();
+        myTasks = new ArrayList<Task> ();
     }
 
     @Override
@@ -100,13 +104,39 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         private void scheduleReduceJob() {
             
         }
-        
-        private void taskStatusChecker() {
-            
-        }
-        
-        private void reassignTask() {
-            
+    }
+    
+    /**
+     * Re-assigns all the tasks of nodeId to first node in list which is not nodeId.
+     * 
+     * @param nodeId
+     */
+    private void reassignTasks(Integer nodeId) {
+        for (Integer i = 0; i < myTasks.size(); i++) {
+            if (myTasks.get(i).getNode().fst() == nodeId) {
+                int j = 0;
+                while (myComputeNodesList.get(j) != null && myComputeNodesList.get(j).fst() == nodeId) {
+                    j++;
+                }
+                try {
+                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                                Naming.lookup("//" + myComputeNodesList.get(j).snd() + "/ComputeNode" + myComputeNodesList.get(j).fst());
+                    
+                    // Assigning ith task to J node
+                    computeNode.executeTask(myTasks.get(i));
+
+                } catch (MalformedURLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (RemoteException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (NotBoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }
         }
     }
     
@@ -117,6 +147,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     private void releaseNode(Integer nodeId) {
         // remove entry
+        myComputeNodesList.remove(nodeId);
     }
 
     @Override
@@ -124,17 +155,25 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         heartBeatStatus.put(nodeId, System.currentTimeMillis());
     }
     
+    /**
+     * This class periodically checks whether node is alive or not. 
+     * If not, removes node from list and re-assigns the tasks.
+     */
     private class NodeStatusChecker extends TimerTask {
         public void run() {
-            for (Integer i = 0; i < myComputeNodesList.size(); i++) {
-                Long diff = System.currentTimeMillis() - heartBeatStatus.get(myComputeNodesList.get(i));
-                if (diff > 30 * 1000) {
-                    myComputeNodesList.remove(i);
-                    i--;
-                    
-                    // XXX: move task to other nodes...
-                    
+            try {
+                for (Integer i = 0; i < myComputeNodesList.size(); i++) {
+                    Long diff = System.currentTimeMillis()
+                            - heartBeatStatus.get(myComputeNodesList.get(i).fst());
+                    if (diff > 30 * 1000) {
+                        Integer nodeId = myComputeNodesList.get(i).fst();
+                        releaseNode(nodeId);
+                        reassignTasks(nodeId);
+                        i--;
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -145,47 +184,78 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Entry");
         Iterator<Integer> iterator = data.iterator();
         while (iterator.hasNext()) {
-            lg.log(Level.FINER,"submitJob(list): Recevied integer -> "+ iterator.next());
+            lg.log(Level.FINER, "submitJob(list): Recevied integer -> " + iterator.next());
         }
         int cnodes = myComputeNodesList.size();
         int datums = data.size();
-        int tasksize = 0; 
-        while((tasksize=datums/cnodes)==0) cnodes--; 
-        List<Task> tasks = new ArrayList<Task>();
+        int tasksize = 0;
+        while ((tasksize = datums / cnodes) == 0)
+            cnodes--;
+        
 
         // For each node but the last ...
         List<Integer> tdata = null;
         Task ttask = null;
         int i = 0;
-        for(; i < (cnodes-1) ; i++ ) {
+        for (; i < (cnodes - 1); i++) {
             tdata = new ArrayList<Integer>();
             // ... iterate through that nodes chunk of the data.
-            for(int j = 0; j < tasksize ; j++) {
-                tdata.add(data.get((i*tasksize)+j));
+            for (int j = 0; j < tasksize; j++) {
+                tdata.add(data.get((i * tasksize) + j));
             }
             // ... build a task for a node.
             ttask = new Task();
+            myMaxTaskId++;
+            ttask.setTaskId(myMaxTaskId);
             ttask.setData(tdata);
-            tasks.add(ttask);
+            myTasks.add(ttask);
             lg.log(Level.FINER, "submitJob(list): Added a task with "
-                   +tdata.size()+" elements to task list");
+                    + tdata.size() + " elements to task list");
         }
         tdata = new ArrayList<Integer>();
         // The last node will handle any remainder data.
-        for(int j = i*tasksize; j < data.size() ; j++) {
+        for (int j = i * tasksize; j < data.size(); j++) {
             tdata.add(data.get(j));
         }
         ttask = new Task();
+        myMaxTaskId++;
+        ttask.setTaskId(myMaxTaskId);
         ttask.setData(tdata);
-        tasks.add(ttask);
+        myTasks.add(ttask);
         lg.log(Level.FINER, "submitJob(list): Added a task with "
-               +tdata.size()+" elements to task list");
+                + tdata.size() + " elements to task list");
 
         lg.log(Level.FINEST, "submitJob(list): Task list of size "
-               +tasks.size()+" created.");
-
+                + myTasks.size() + " created.");
 
         lg.log(Level.FINEST, "submitJob(list): Exit");
+        
+        // Assigning tasks to nodes
+        for (i = 0; i < myTasks.size(); i++) {
+            try {
+                if (myComputeNodesList.size() < i) {
+                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                                Naming.lookup("//" + myComputeNodesList.get(i).snd() + "/ComputeNode" + myComputeNodesList.get(i).fst());
+                    computeNode.executeTask(myTasks.get(i));
+                }
+                else {
+                    // Remaining tasks are assigning to first compute node
+                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                                Naming.lookup("//" + myComputeNodesList.get(0).snd() + "/ComputeNode" + myComputeNodesList.get(0).fst());
+                    computeNode.executeTask(myTasks.get(0));
+                }
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        
         return false;
     }
     
@@ -196,9 +266,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     
     @Override
     public void updateTaskTransfer(Task task) throws RemoteException {
-        // Increment task migration
+        // Incrementing task migration
+        myServerStats.setNoOfTaskMigrations(myServerStats.getNoOfTaskMigrations() + 1);
         
-        
+        for (Integer i = 0; i < myTasks.size(); i++) {
+            if(myTasks.get(i).getTaskId() == task.getTaskId()) {
+                myTasks.get(i).setNode(task.getNode());
+            }
+        }
     }
     
     /**

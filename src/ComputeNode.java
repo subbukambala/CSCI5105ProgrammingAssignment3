@@ -134,7 +134,7 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
         }
     }
     
-    private class TaskExecutor extends Thread {
+    public class TaskExecutor extends Thread {
         Task myTask;
         public TaskExecutor(Task t) {
             myTask = t;
