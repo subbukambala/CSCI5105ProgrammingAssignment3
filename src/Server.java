@@ -5,12 +5,6 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -21,6 +15,8 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -48,7 +44,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     private List<Pair<Integer, String>> myComputeNodesList;
     
-    Map<Integer, Boolean> heartBeatStatus = new ConcurrentHashMap<Integer, Boolean>();
+    /**
+     * Key is node id, value is time at which last message is called. 
+     */
+    Map<Integer, Long> heartBeatStatus = new ConcurrentHashMap<Integer, Long>();
 
 
     public Server() throws Exception {
@@ -143,8 +142,23 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     @Override
-    public void heartBeatMsg(Integer nodeId)  throws RemoteException{
-        // put true flag
+    public void heartBeatMsg(Integer nodeId)  throws RemoteException {
+        heartBeatStatus.put(nodeId, System.currentTimeMillis());
+    }
+    
+    private class NodeStatusChecker extends TimerTask {
+        public void run() {
+            for (Integer i = 0; i < myComputeNodesList.size(); i++) {
+                Long diff = System.currentTimeMillis() - heartBeatStatus.get(myComputeNodesList.get(i));
+                if (diff > 30 * 1000) {
+                    myComputeNodesList.remove(i);
+                    i--;
+                    
+                    // XXX: move task to other nodes...
+                    
+                }
+            }
+        }
     }
     
     @Override
@@ -172,7 +186,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
 
     @Override 
-        public Boolean submitJob(List<Integer> data)
+    public Boolean submitJob(List<Integer> data)
     {
         lg.log(Level.FINEST, "submitJob(list): Entry");
         Iterator<Integer> iterator = data.iterator();
@@ -254,8 +268,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             System.exit(0);
         }
         
+        Server server;
         try {
-            Naming.rebind("Server", new Server());
+            server =  new Server();
+            
+            Naming.rebind("Server", server);
+            
+            // Scheduling node status checker
+            Timer t = new Timer();
+            NodeStatusChecker h = server.new NodeStatusChecker();
+            
+            t.schedule(h, 0, 30 * 1000);
+            
         } catch (Exception e) {
             System.out.println("Server failed: ");
             e.printStackTrace();

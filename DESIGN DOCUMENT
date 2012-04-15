@@ -17,9 +17,15 @@ do the actual sorting part assigned to the compute node.
 
 Draw design diagram
 
+2) Node status checker maintains a map<NodeId, last visited time>
+   if last visited time is more than 30 secs... server assumes node is dead.
+
+heart.beat.interval for every 30 secs...
+
 
 Configuration:
 --------------
+
 
 
 

@@ -9,6 +9,8 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 
@@ -115,6 +117,23 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     
     }
     
+    private class HeartBeatHandler extends TimerTask {
+        public void run() {
+            try {
+                if (getProbability() > failProbability) {
+                    server.heartBeatMsg(id);
+                }
+                else {
+                    // Turning off node.
+                    System.exit(0);
+                }
+            } catch (RemoteException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+    
     private class TaskExecutor extends Thread {
         Task myTask;
         public TaskExecutor(Task t) {
@@ -149,9 +168,9 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
      * This method generates random number. Then this number will be checked 
      * against failed probability.
      */
-    private Integer getProbability() {
-        // Write code
-        return 100;
+    private Double getProbability() {
+        Double random = Math.random() * 100 ;
+        return random;
     }
     
     /**
@@ -280,6 +299,12 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
             ComputeNode node = new ComputeNode(fileservername, underLoad, overLoad);
             
             Naming.rebind("ComputeNode" + Integer.toString(node.getID()), node);
+            
+            // Scheduling heart beat message handler
+            Timer t = new Timer();
+            HeartBeatHandler h = node.new HeartBeatHandler();
+            
+            t.schedule(h, 0, 30 * 1000);
         } catch (Exception e) {
             System.out.println("FileServer exception: ");
             e.printStackTrace();
