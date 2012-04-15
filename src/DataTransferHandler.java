@@ -34,7 +34,7 @@ public class DataTransferHandler implements DataTransferInterface {
         System.out.println("data transfer is complete");
     }
     
-    public void transferData(DataTransferInterface DTI, Integer maxBufferWindow, String srcFilePath, String destFilePath) {
+    public void transferData(DataTransferInterface DTI, Integer jobId, Integer maxBufferWindow, String srcFilePath, String destFilePath) {
         try {
             // Open the file that is the first
             // command line parameter
@@ -48,18 +48,23 @@ public class DataTransferHandler implements DataTransferInterface {
             int x = 0;
             char[] chars = new char[maxBufferWindow];
             
-            while ((x = br.read(chars ,offset, maxBufferWindow)) != -1) {
+            String str  = "";
+            int i = 0;
+            while ((x = br.read(chars, 0, maxBufferWindow)) != -1) {
                 offset += maxBufferWindow;
-                String str = String.valueOf(chars);
                 
-                DTI.storeData(str, destFilePath);
+                str = String.valueOf(chars);
+                
+                DTI.storeData(str.substring(0, x), destFilePath);
+                
+                str = "";
             }
             
             // Close the input stream
             in.close();
             
         } catch (Exception e) {// Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

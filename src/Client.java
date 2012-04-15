@@ -49,7 +49,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * 
      */
     private void submitJob() {
-        
+       
     }
     
     /**
@@ -61,12 +61,15 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     
     public void transferData(
             DataTransferInterface DTI,
+            Integer jobId,
             Integer maxBufferWindow,
             String srcFilePath,
             String destFilePath) throws RemoteException 
     {
         DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
+        
+        DTI.onDataTransferComplete(jobId, destFilePath);
     }
 
     public void storeData(String data, String filePath) throws RemoteException {
@@ -135,11 +138,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         try {
             client = new Client(server, id, false);
             Naming.rebind("Client" + id, client);
+            
         } catch (Exception e) {
             System.out.println("Client failed: ");
             e.printStackTrace();
         }
-
     }
 
 }

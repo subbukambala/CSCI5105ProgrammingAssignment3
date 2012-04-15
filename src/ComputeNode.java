@@ -217,13 +217,15 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     }
     
     @Override
-    public void transferData(DataTransferInterface DTI,
+    public void transferData(
+            DataTransferInterface DTI,
+            Integer jobId, 
             Integer maxBufferWindow,
             String srcFilePath,
             String destFilePath) throws RemoteException 
     {
         DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
     }
 
     @Override

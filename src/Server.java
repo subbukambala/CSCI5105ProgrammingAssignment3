@@ -11,8 +11,11 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +65,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         
         maxComputeNodeId++;
         
-        lg.log(Level.FINER, "ComputeNode " + maxComputeNodeId + "joined.");
+        lg.log(Level.FINER, "ComputeNode " + maxComputeNodeId + " joined.");
         
         myComputeNodesList.add(new Pair<Integer, String>(maxComputeNodeId, getClientHost()));
         return maxComputeNodeId;
@@ -108,12 +111,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
     
     public void transferData(DataTransferInterface DTI, 
+                             Integer jobId,
                              Integer maxBufferWindow, 
                              String srcFilePath, 
                              String destFilePath) throws RemoteException
     {
         DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
     }
     
     public void storeData(String data, String filePath) throws RemoteException {
@@ -143,7 +147,25 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
     
     @Override
-    public Boolean submitJob() throws RemoteException {
+    public Boolean submitJob(Integer clientId, Integer jobId, String filePath) throws RemoteException {
+        
+        ClientInterface c;
+        try {
+            c = (ClientInterface) Naming.lookup("//" + getClientHost() + "/Client" + clientId);
+            c.transferData(this, jobId, 1024, filePath, "../data/server/NGramLZOProcessor.java");
+            
+            
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ServerNotActiveException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         return false;
     }
     
