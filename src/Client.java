@@ -90,9 +90,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                              Integer maxBufferWindow,
                              String srcFilePath,
                              String destFilePath) throws RemoteException
+
     {
         DataTransferHandler d = new DataTransferHandler();
-        d.transferData(DTI, maxBufferWindow, srcFilePath, destFilePath);
+        d.transferData(DTI, jobId, maxBufferWindow, srcFilePath, destFilePath);
+        
+        DTI.onDataTransferComplete(jobId, destFilePath);
     }
 
     public void storeData(String data, String filePath) 
@@ -202,7 +205,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             System.out.println("Client failed: ");
             e.printStackTrace();
         }
-
     }
 
 }

@@ -20,6 +20,7 @@ public interface DataTransferInterface {
      * @throws RemoteException
      */
     public void transferData(DataTransferInterface DTI, 
+                             Integer jobId, 
                              Integer maxBufferWindow, 
                              String srcFilePath, 
                              String destFilePath) throws RemoteException;
