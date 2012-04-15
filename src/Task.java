@@ -5,12 +5,15 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
+import java.util.List;
+
 public class Task {
 
     private Integer taskId;
     
     private Pair<Integer, String> node;
     
+    private List<Integer> data;
     private Integer dataStartLine;
     private Integer dataEndLine;
     
@@ -66,5 +69,13 @@ public class Task {
 
     public void setDataEndLine(Integer dataEndLine) {
         this.dataEndLine = dataEndLine;
+    }
+
+    public void setData(List<Integer> _data) {
+        data = _data;
+    }
+    
+    public List<Integer> getData() {
+        return data;
     }
 }

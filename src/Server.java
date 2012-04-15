@@ -17,6 +17,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +167,57 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             e.printStackTrace();
         }
         
+        return false;
+    }
+
+
+    @Override 
+        public Boolean submitJob(List<Integer> data)
+    {
+        lg.log(Level.FINEST, "submitJob(list): Entry");
+        Iterator<Integer> iterator = data.iterator();
+        while (iterator.hasNext()) {
+            lg.log(Level.FINER,"submitJob(list): Recevied integer -> "+ iterator.next());
+        }
+        int cnodes = myComputeNodesList.size();
+        int datums = data.size();
+        int tasksize = 0; 
+        while((tasksize=datums/cnodes)==0) cnodes--; 
+        List<Task> tasks = new ArrayList<Task>();
+
+        // For each node but the last ...
+        List<Integer> tdata = null;
+        Task ttask = null;
+        int i = 0;
+        for(; i < (cnodes-1) ; i++ ) {
+            tdata = new ArrayList<Integer>();
+            // ... iterate through that nodes chunk of the data.
+            for(int j = 0; j < tasksize ; j++) {
+                tdata.add(data.get((i*tasksize)+j));
+            }
+            // ... build a task for a node.
+            ttask = new Task();
+            ttask.setData(tdata);
+            tasks.add(ttask);
+            lg.log(Level.FINER, "submitJob(list): Added a task with "
+                   +tdata.size()+" elements to task list");
+        }
+        tdata = new ArrayList<Integer>();
+        // The last node will handle any remainder data.
+        for(int j = i*tasksize; j < data.size() ; j++) {
+            tdata.add(data.get(j));
+        }
+        ttask = new Task();
+        ttask.setData(tdata);
+        tasks.add(ttask);
+        lg.log(Level.FINER, "submitJob(list): Added a task with "
+               +tdata.size()+" elements to task list");
+
+        lg.log(Level.FINEST, "submitJob(list): Task list of size "
+               +tasks.size()+" created.");
+
+
+        lg.log(Level.FINEST, "submitJob(list): Exit");
         return false;
     }
     

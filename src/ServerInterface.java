@@ -22,6 +22,10 @@ public interface ServerInterface extends Remote, DataTransferInterface {
     /**
      */
     public Boolean submitJob(Integer clientId, Integer jobId, String filePath) throws RemoteException;
+
+    /**
+     */
+    public Boolean submitJob(List<Integer> dtata) throws RemoteException;
     
     /**
      */

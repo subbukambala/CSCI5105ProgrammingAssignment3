@@ -63,6 +63,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             // The format of the file is very specific.
             // Each integer will be separated by a new line.
             while ((strInt = br.readLine()) != null) {
+                System.out.println(strInt);
                 Integer i = new Integer(strInt);
                 data.add(i);
             }
@@ -74,8 +75,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                  );
             System.exit(1);
         }
-            // Close the input stream
+        // Close the input stream
         in.close();
+        server.submitJob(data);        
     }
 
     /**
@@ -88,6 +90,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     public void transferData(
                              DataTransferInterface DTI,
                              Integer maxBufferWindow,
+                             Integer jobId,
                              String srcFilePath,
                              String destFilePath) throws RemoteException
 
@@ -190,7 +193,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
         }
         
-        if ( serverStatsSwitch ^ nodeStatsSwitch ^ fileSwitch ) {
+        if (
+            !((serverStatsSwitch ^ fileSwitch) 
+            && (nodeStatsSwitch ^ fileSwitch))
+           ) {
                 cli.usage("-n -s -f switches are mutually exclusive!\n");
                 System.exit(1);
         }
