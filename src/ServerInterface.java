@@ -22,6 +22,11 @@ public interface ServerInterface extends Remote {
     /**
      */
     public Boolean submitJob(List<Integer> dtata) throws RemoteException;
+
+
+    /**
+     */
+    public Boolean aggregateTasks(Task t) throws RemoteException;
     
     /**
      */

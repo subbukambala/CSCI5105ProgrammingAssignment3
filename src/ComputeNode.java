@@ -215,6 +215,14 @@ public class ComputeNode extends UnicastRemoteObject
             lg.log(Level.FINER, "sort: Received integer -> " 
                    + iterator.next());
         }
+        try {
+            server.aggregateTasks(t);
+        }
+        catch (Exception e) {
+            lg.log(Level.SEVERE,"Sort:Failure");
+            e.printStackTrace();
+            System.exit(1);
+        }
         lg.log(Level.FINEST,"sort: Exit");
     }
     
