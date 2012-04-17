@@ -13,7 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
-
+import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,10 @@ import java.net.MalformedURLException;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
-public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInterface {
+public class ComputeNode extends UnicastRemoteObject 
+    implements ComputeNodeInterface {
+
+    private static String defaultconf = "../cfg/default.config";
 
     private Logger lg;
     
@@ -31,9 +34,9 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     
     private Integer id;
     
-    private Integer underLoadThreshold;
+    private Double underLoadThreshold;
     
-    private Integer overLoadThreshold;
+    private Double overLoadThreshold;
     
     private Double failProbability;
     
@@ -46,25 +49,70 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
      */
     private static int tasksCount;
     
-    
-    public ComputeNode(String servername, Integer _underLoadThreshold, Integer _overLoadThreshold) throws Exception {
+    public ComputeNode(String servername
+                       ,Double _underLoadThreshold
+                       ,Double _overLoadThreshold
+                       ,Double _failProbability
+                       ,String  configFile) throws Exception {
         
-        server = (ServerInterface) Naming.lookup("//" + servername + "/Server");
+        server = (ServerInterface) Naming.lookup("//" + servername 
+                                                 + "/Server");
 
         id = server.registerNode();
         
         lg = new Logger("Compute Node:" + id);
         lg.log(Level.FINER, "ComputeNode " + id + " started.");
         
-        overLoadThreshold = _overLoadThreshold;
-        underLoadThreshold = _underLoadThreshold;
+        // If a config file was specified
+        if(configFile == null) {
+            configFile = defaultconf;
+        }
         
-        // Loading config file
-        Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream("../cfg/node.config"));
-            failProbability = 
-                Double.parseDouble(properties.getProperty("fail.probability"));
+            // TODO: Only load if we need to.
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(configFile));
+
+            if(_overLoadThreshold == null)
+                _overLoadThreshold = 
+                    new Double
+                      (
+                       properties.getProperty
+                         ("computenode.overload_threshhold")
+                      );
+            overLoadThreshold = _overLoadThreshold;
+
+            if(_underLoadThreshold == null)
+                _underLoadThreshold = 
+                    new Double
+                      (
+                       properties.getProperty
+                         ("computenode.underload_threshhold")
+                      );
+            underLoadThreshold = _underLoadThreshold;
+
+            if(_failProbability == null)
+                _failProbability = 
+                    new Double
+                      (
+                       properties.getProperty
+                         ("computenode.fail_probability")
+                      );
+            failProbability = _failProbability;
+
+        lg.log(Level.FINER, "ComputeNode " 
+               + id 
+               + ": under load threshhold = " 
+               + underLoadThreshold);
+        lg.log(Level.FINER, "ComputeNode " 
+               + id 
+               + ": over load threshhold = " 
+               + overLoadThreshold);
+        lg.log(Level.FINER, "ComputeNode " 
+               + id 
+               + ": fail probability = " 
+               + failProbability);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,18 +167,25 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     
     private class HeartBeatHandler extends TimerTask {
         public void run() {
+            lg.log(Level.FINEST, " HeartBeatHandler.run: Enter");
+
             try {
                 if (getProbability() > failProbability) {
+                    lg.log(Level.INFO, " HeartBeatHandler.run: Alive.");
+
                     server.heartBeatMsg(id);
                 }
                 else {
                     // Turning off node.
+                    lg.log(Level.WARNING, 
+                           " HeartBeatHandler.run: DEAD!(exit)");
                     System.exit(0);
                 }
             } catch (RemoteException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            lg.log(Level.FINEST, " HeartBeatHandler.run: Exit");
         }
     }
     
@@ -142,10 +197,10 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
         
         public void run() {
             if (myTask.getCurrentTaskType().equals(Task.TaskType.MAP)) {
-                sort();
+                sort(myTask);
             }
             else {
-                merge();
+                merge(myTask);
             }
         }
     }
@@ -153,15 +208,22 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
     /**
      * map task
      */
-    private void sort() {
-        System.out.println("Sorting...");
+    private void sort(Task t) {
+        lg.log(Level.FINEST,"sort: Enter");
+        Iterator<Integer> iterator = t.getData().iterator();
+        while (iterator.hasNext()) {
+            lg.log(Level.FINER, "sort: Received integer -> " 
+                   + iterator.next());
+        }
+        lg.log(Level.FINEST,"sort: Exit");
     }
     
     /**
      * reduce task
      */
-    private void merge() {
-        System.out.println("Merging...");
+    private void merge(Task t) {
+        lg.log(Level.FINEST,"merge: Enter");
+        lg.log(Level.FINEST,"merge: Exit");
     }
     
     /**
@@ -204,10 +266,11 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
            
             currLoad = Double.parseDouble(data[data.length - 2]);
             
-            lg.log(Level.FINER, " Load :" + currLoad);
+            lg.log(Level.FINER, " getCurrentLoad: Load =" + currLoad);
             
-        } catch(IOException e) {
-            e.printStackTrace();
+        } catch(Exception e) {
+            lg.log(Level.WARNING, "getCurrentLoad: Unable to parse system "
+                   +" load information! Using " +currLoad);
         }
         
         return currLoad * 100;
@@ -239,18 +302,32 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
 
         String fileservername = "localhost";
         String id = null;
+        Double underLoad = null;
+        Double overLoad = null;
+        Double failProb = null;
+        String fileName = null;
 
         ArgumentHandler cli = new ArgumentHandler
-                (
-                        "FileServer [-h] [collector address] -u -o"
-                        , "TBD - Currently does nothing."
-                        ,
-                        "Bala Subrahmanyam Kambala, Daniel William DaCosta - GPLv3 (http://www.gnu.org/copyleft/gpl.html)"
-                );
+            (
+             "FileServer [-h] [collector address] -u -o"
+             , "TBD - Currently does nothing."
+             ,
+             "Bala Subrahmanyam Kambala, Daniel William DaCosta - "
+             +"GPLv3 (http://www.gnu.org/copyleft/gpl.html)"
+             );
         cli.addOption("h", "help", false, "Print this usage information.");
         cli.addOption("u", "underLoad", true, "Under load threshold");
         cli.addOption("o", "overLoad", true, "Over load threshold");
+        cli.addOption("p", "probability", true, "Fail Probability(0-100)");
+        cli.addOption("f", "configfile", true
+                      ,"The configuration file to read parameters from. "
+                      +"The default is "+defaultconf+". "
+                      +"Command line arguments will override config file "
+                      +"arguments."
+                      );
         
+
+
         // parse command line
         CommandLine commandLine = cli.parse(argv);
         if (commandLine.hasOption('h')) {
@@ -258,28 +335,43 @@ public class ComputeNode extends UnicastRemoteObject implements ComputeNodeInter
             System.exit(0);
         }
         
-        Integer underLoad = 30;
-        Integer overLoad = 90;
         if (commandLine.hasOption('u')) {
-            underLoad = Integer.parseInt(commandLine.getOptionValue('u'));
+            // TODO : Ensure the number is within range
+            underLoad = Double.parseDouble(commandLine.getOptionValue('u'));
         }
         
         if (commandLine.hasOption('o')) {
-            overLoad = Integer.parseInt(commandLine.getOptionValue('o'));
+            // TODO : Ensure the number is within range
+            overLoad = Double.parseDouble(commandLine.getOptionValue('o'));
+        }
+
+        if (commandLine.hasOption('p')) {
+            // TODO : Ensure the number is within range
+            failProb = Double.parseDouble(commandLine.getOptionValue('p'));
+        }
+
+        if (commandLine.hasOption('f')) {
+            fileName = commandLine.getOptionValue('f');
         }
         
         if (commandLine.getArgs().length != 0)
             fileservername = commandLine.getArgs()[0];
         try {
-            ComputeNode node = new ComputeNode(fileservername, underLoad, overLoad);
+            ComputeNode node = 
+                new ComputeNode(fileservername
+                                ,underLoad
+                                ,overLoad
+                                ,failProb
+                                ,fileName);
             
-            Naming.rebind("ComputeNode" + Integer.toString(node.getID()), node);
+            Naming.rebind("ComputeNode" 
+                          + Integer.toString(node.getID()), node);
             
             // Scheduling heart beat message handler
             Timer t = new Timer();
             HeartBeatHandler h = node.new HeartBeatHandler();
-            
             t.schedule(h, 0, 30 * 1000);
+
         } catch (Exception e) {
             System.out.println("FileServer exception: ");
             e.printStackTrace();

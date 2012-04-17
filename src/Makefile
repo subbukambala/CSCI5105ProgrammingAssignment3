@@ -40,6 +40,7 @@ JC = javac
 #
 
 CLASSES = \
+	Task.java \
 	Pair.java \
 	Logger.java \
 	ArgumentHandler.java \

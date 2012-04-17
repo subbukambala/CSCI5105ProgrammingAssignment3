@@ -6,16 +6,15 @@
  */
 
 import java.util.List;
+import java.io.Serializable;
 
-public class Task {
+public class Task implements Serializable {
 
     private Integer taskId;
     
     private Pair<Integer, String> node;
     
     private List<Integer> data;
-    private Integer dataStartLine;
-    private Integer dataEndLine;
     
     public enum TaskType {MAP, REDUCE};
     
@@ -54,23 +53,6 @@ public class Task {
     public void setNode(Pair<Integer, String>  node) {
         this.node = node;
     }
-
-    public Integer getDataStartLine() {
-        return dataStartLine;
-    }
-
-    public void setDataStartLine(Integer dataStartLine) {
-        this.dataStartLine = dataStartLine;
-    }
-
-    public Integer getDataEndLine() {
-        return dataEndLine;
-    }
-
-    public void setDataEndLine(Integer dataEndLine) {
-        this.dataEndLine = dataEndLine;
-    }
-
     public void setData(List<Integer> _data) {
         data = _data;
     }

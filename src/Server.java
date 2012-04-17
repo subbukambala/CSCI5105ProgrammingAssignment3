@@ -184,7 +184,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Entry");
         Iterator<Integer> iterator = data.iterator();
         while (iterator.hasNext()) {
-            lg.log(Level.FINER, "submitJob(list): Recevied integer -> " + iterator.next());
+            lg.log(Level.FINER, "submitJob(list): Received integer -> " 
+                   + iterator.next());
         }
         int cnodes = myComputeNodesList.size();
         int datums = data.size();
@@ -230,34 +231,21 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Task list of size "
                 + myTasks.size() + " created.");
 
-        lg.log(Level.FINEST, "submitJob(list): Exit");
         
         // Assigning tasks to nodes
         for (i = 0; i < myTasks.size(); i++) {
             try {
-                if (myComputeNodesList.size() < i) {
-                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                                Naming.lookup("//" + myComputeNodesList.get(i).snd() + "/ComputeNode" + myComputeNodesList.get(i).fst());
-                    computeNode.executeTask(myTasks.get(i));
-                }
-                else {
-                    // Remaining tasks are assigning to first compute node
-                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                                Naming.lookup("//" + myComputeNodesList.get(0).snd() + "/ComputeNode" + myComputeNodesList.get(0).fst());
-                    computeNode.executeTask(myTasks.get(0));
-                }
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (RemoteException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (NotBoundException e) {
-                // TODO Auto-generated catch block
+                ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                    Naming.lookup("//" 
+                                  + myComputeNodesList.get(i).snd() 
+                                  + "/ComputeNode" 
+                                  + myComputeNodesList.get(i).fst());
+                computeNode.executeTask(myTasks.get(i));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        
+        lg.log(Level.FINEST, "submitJob(list): Exit");        
         return false;
     }
     
