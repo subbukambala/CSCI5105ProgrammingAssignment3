@@ -28,7 +28,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private Logger lg;
 
     /**
-     * This variable is to ensure that Collector generates unique Compute node id
+     * This variable is to ensure that Collector generates unique Compute node
      * id.
      */
     private Integer maxComputeNodeId;
@@ -267,7 +267,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         while ((tasksize = datums / cnodes) == 0)
             cnodes--;
         
-
+        // These tasks should really be built using the sub-list functions.
         // For each node but the last ...
         List<Integer> tdata = null;
         MapTask ttask = null;

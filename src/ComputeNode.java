@@ -8,6 +8,8 @@
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Exception;
 import java.net.MalformedURLException;
+import java.util.Collections;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
@@ -238,6 +241,10 @@ public class ComputeNode extends UnicastRemoteObject
                    + iterator.next());
         }
         try {
+            Collections.sort(t.getData());
+            synchronized(t) {
+                t.wait(10*t.getData().size());
+            }
             server.aggregateMapTasks(t);
         }
         catch (Exception e) {
@@ -256,20 +263,49 @@ public class ComputeNode extends UnicastRemoteObject
      */
     private void merge(ReduceTask t) {
         lg.log(Level.FINEST,"merge: Enter");
-        
-        try {
-            Thread.sleep(10 * 1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        
+        List<MapTask> list = t.getData();
+        List<Integer> rv = new ArrayList<Integer>();
         // TODO: Merge all the lists!
+        
         try {
+            // XXX: This algorithm for merging is brain-dead.
+            // It could be much more efficient!
+            for(;list.size() > 0;) {
+                Integer mini = null;
+                int i = 0;
+                
+                lg.log(Level.FINER,"merge: list size = " + list.size());
+                for(;i<list.size();i++) {
+                    lg.log(Level.FINER,"merge: "+i+ " " +mini);
+
+                    if(mini == null 
+                       || list.get(i).getData().get(0) 
+                          < list.get(mini).getData().get(0)) {
+                        mini = i;
+                    }  
+                }
+                
+                lg.log(Level.FINER,"merge: "+list.get(mini).getData().get(0));
+                rv.add(list.get(mini).getData().get(0));
+                // XXX : remove must behave sensibly here and decrement the 
+                // size
+                list.get(mini).getData().remove(0);
+                if(list.get(mini).getData().size() == 0) {
+                    lg.log(Level.FINER,"merge: "+list.size());
+                    if(list.remove((int)mini)==null) 
+                        lg.log(Level.SEVERE,"merge: remove returned null!");
+                        
+                    lg.log(Level.FINER,"merge: "+list.size());
+                }
+            }
+            MapTask mt = new MapTask();
+            mt.setData(rv);
+            t.getData().clear();
+            t.getData().add(mt);
             server.aggregateReduceTasks(t);
         }
         catch (Exception e) {
-            lg.log(Level.SEVERE,"Merge:Failure");
+            lg.log(Level.SEVERE,"Merge: Failure");
             e.printStackTrace();
             System.exit(1);
         }
