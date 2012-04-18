@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.logging.Level;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.commons.cli.CommandLine;
@@ -25,6 +26,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     private static Logger lg;
 
     private static ServerInterface server;
+
+    private List<Integer> results;
 
     /**
      * The Client constructor.
@@ -38,8 +41,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     @Override
-    public void jobResponse(TaskStats stats, String outputFilePath) throws RemoteException {
-        // prints job stats
+    synchronized public void jobResponse(TaskStats stats, List<Integer> _results) throws RemoteException {
+        results = _results;
+        notify();
     }
 
     /**
@@ -79,6 +83,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         // Close the input stream
         in.close();
         server.submitJob(data);        
+        synchronized(this){wait();}
     }
 
     /**
@@ -183,7 +188,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             Naming.rebind("Client", client);
             if ( fileSwitch ) {
                 client.submitJob(filepath);
+                Iterator<Integer> iterator = client.results.iterator();
+                while (iterator.hasNext()) {
+                    System.out.println(iterator.next());
+                }
             }
+            System.exit(1);
         } catch (Exception e) {
             System.out.println("Client failed: ");
             e.printStackTrace();

@@ -39,9 +39,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     
     private ServerStats myServerStats;
     
-    private List<Task> myMaps;
+    private List<MapTask> myMaps;
 
-    private List<Task> myReduces;
+    private ReduceTask myReduce;
+
+    private ClientInterface client;
     
     /**
      * Contains registered Compute node list.
@@ -63,8 +65,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         myServerStats =  new ServerStats();
         
         myComputeNodesList = new ArrayList<Pair<Integer,String>> ();
-        myMaps = new ArrayList<Task> ();
-        myReduces = new ArrayList<Task> ();
+        myMaps = new ArrayList<MapTask> ();
+        myReduce = new ReduceTask();
+        List<MapTask> list = new ArrayList<MapTask>();
+        myReduce.setData(list);
     }
 
     @Override
@@ -166,8 +170,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         public void run() {
             try {
                 for (Integer i = 0; i < myComputeNodesList.size(); i++) {
-                    Long diff = System.currentTimeMillis()
-                            - heartBeatStatus.get(myComputeNodesList.get(i).fst());
+                    Long diff = 
+                        System.currentTimeMillis()
+                        - heartBeatStatus.get(myComputeNodesList.get(i).fst());
                     if (diff > 30 * 1000) {
                         Integer nodeId = myComputeNodesList.get(i).fst();
                         releaseNode(nodeId);
@@ -181,10 +186,31 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
     }
     
+    // ASSUMPTION: submitJob is called by a single client and therefore
+    // does not require thread safe programming!
     @Override 
-    public Boolean submitJob(List<Integer> data)
+    synchronized public Boolean submitJob(List<Integer> data) throws Exception
     {
         lg.log(Level.FINEST, "submitJob(list): Entry");
+
+
+        
+        // Ignore any submitted jobs if another job is in progress
+        if(myReduce.getData().size()!=0) {
+            lg.log(Level.SEVERE, "submitJob(list): Reduce task in progress."
+                   +" Ignoring job!");
+            return false;
+        }
+        if(myMaps.size()!=0) {
+            lg.log(Level.SEVERE, "submitJob(list): Map task in progress."
+                   +" Ignoring job!");
+            return false;
+        }
+
+        String url = "//" + getClientHost() + "/Client";
+        client = (ClientInterface) Naming.lookup(url);
+
+            
         Iterator<Integer> iterator = data.iterator();
         while (iterator.hasNext()) {
             lg.log(Level.FINER, "submitJob(list): Received integer -> " 
@@ -199,7 +225,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         // For each node but the last ...
         List<Integer> tdata = null;
-        Task ttask = null;
+        MapTask ttask = null;
         int i = 0;
         for (; i < (cnodes - 1); i++) {
             tdata = new ArrayList<Integer>();
@@ -208,10 +234,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 tdata.add(data.get((i * tasksize) + j));
             }
             // ... build a task for a node.
-            ttask = new Task();
+            ttask = new MapTask();
             myMaxTaskId++;
             ttask.setTaskId(myMaxTaskId);
-            ttask.setCurrentTaskType(Task.TaskType.MAP);
             ttask.setData(tdata);
             myMaps.add(ttask);
             lg.log(Level.FINER, "submitJob(list): Added a task with "
@@ -222,9 +247,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         for (int j = i * tasksize; j < data.size(); j++) {
             tdata.add(data.get(j));
         }
-        ttask = new Task();
+        ttask = new MapTask();
         myMaxTaskId++;
-        ttask.setCurrentTaskType(Task.TaskType.MAP);
         ttask.setTaskId(myMaxTaskId);
         ttask.setData(tdata);
         myMaps.add(ttask);
@@ -238,35 +262,88 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         // Assigning tasks to nodes
         for (i = 0; i < myMaps.size(); i++) {
             try {
+                url = "//" 
+                    + myComputeNodesList.get(i).snd() 
+                    + "/ComputeNode" 
+                    + myComputeNodesList.get(i).fst();
                 ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                    Naming.lookup("//" 
-                                  + myComputeNodesList.get(i).snd() 
-                                  + "/ComputeNode" 
-                                  + myComputeNodesList.get(i).fst());
+                    Naming.lookup(url);
                 computeNode.executeTask(myMaps.get(i));
             } catch (Exception e) {
+                lg.log(Level.SEVERE,"submitJob(list): failure on executeTask "
+                       +"with url = "+ url);
                 e.printStackTrace();
+                System.exit(1);
             }
         }
-        myReduces.clear();
         lg.log(Level.FINEST, "submitJob(list): Exit");        
-        return false;
+        myReduce.getData().clear();
+        return true;
     }
 
-    // XXX: Not Thread Safe
     // XXX: Does not handle duplicate task aggregations
-    public Boolean aggregateTasks(Task t) throws RemoteException {
-        lg.log(Level.FINEST, "aggregateTasks: Enter");        
-        myReduces.add(t);
-
-
+    // XXX: Does not handle errant tasks
+    synchronized public Boolean aggregateMapTasks(MapTask t) throws RemoteException {
+        lg.log(Level.FINEST, "aggregateMapTasks: Enter");
+        lg.log(Level.FINER,"aggregateMapTasks: Have  "
+               + myReduce.getData().size() +" MapTasks, waiting for "
+               + myMaps.size());
+        
+        myReduce.getData().add(t);
         // If I have received all the maps then 
         // pick a node and send them the merge job.
         // I suppose that means I should send a list of 
         // tasks. Not really sure yet what should be sent.
+        lg.log(Level.FINER,"aggregateMapTasks: Have  "
+               + myReduce.getData().size() +" MapTasks, waiting for "
+               + myMaps.size());
+        
+        if(myReduce.getData().size() == myMaps.size()) {
+            String url = "";
+            myMaps.clear();
+            try {
+                // XXX: Need to check if there is any compute node in 
+                // our list!
+                url = "//" 
+                    + myComputeNodesList.get(0).snd() 
+                    + "/ComputeNode" 
+                    + myComputeNodesList.get(0).fst();
+                ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                    Naming.lookup(url);
+                computeNode.executeTask(myReduce);
+            } catch (Exception e) {
+                lg.log(Level.SEVERE,"aggregateMapTasks: failure on "
+                       +"executeTask with url = "+ url);
+                e.printStackTrace();
+                System.exit(1);
+            }
+            lg.log(Level.FINEST, "aggregateMapTasks: Merge sent to "+url);
+        }
+        lg.log(Level.FINEST, "aggregateMapTasks: Exit");        
+        return true;
+    }
 
-        lg.log(Level.FINEST, "aggregateTasks: Exit");        
-        return false;
+    // XXX: Does not handle duplicate task aggregations
+    // XXX: Does not handle errant tasks
+    public Boolean aggregateReduceTasks(ReduceTask t) throws RemoteException {
+
+        lg.log(Level.FINEST, "aggregateReduceTasks: Enter");
+        if(myMaps.size()!=0) {
+            lg.log(Level.SEVERE,"aggregateReduceTasks: myMaps is non-empty!.");
+            System.exit(1);
+        }
+        
+        List<Integer> sortedlist = new ArrayList<Integer>();
+        
+        for(int i = 0;i<t.getData().size();i++) {
+            sortedlist.addAll(t.getData().get(i).getData());
+        }
+        client.jobResponse(null,sortedlist);
+        myReduce.getData().clear();
+        
+        lg.log(Level.FINEST, "aggregateReduceTasks: Exit");
+
+        return true;
     }
     
     @Override
@@ -277,11 +354,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     @Override
     public void updateTaskTransfer(Task task) throws RemoteException {
         // Incrementing task migration
-        myServerStats.setNoOfTaskMigrations(myServerStats.getNoOfTaskMigrations() + 1);
+        myServerStats
+            .setNoOfTaskMigrations(myServerStats.getNoOfTaskMigrations() + 1);
         
         for (Integer i = 0; i < myMaps.size(); i++) {
             if(myMaps.get(i).getTaskId() == task.getTaskId()) {
-                myMaps.get(i).setNode(task.getNode());
+                myMaps.get(i).setNode(((MapTask)task).getNode());
             }
         }
     }
@@ -292,13 +370,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public static void main(String[] argv) {
       
         ArgumentHandler cli = new ArgumentHandler
-                            (
-                                    "Server [-h] "
-                                    ,
-                                    "TBD."
-                                    ,
-                                    "Daniel William DaCosta, Bala Subrahmanyam Kambala - GPLv3 (http://www.gnu.org/copyleft/gpl.html)"
-                             );
+            (
+             "Server [-h] "
+             ,
+             "TBD."
+             ,
+             "Daniel William DaCosta, Bala Subrahmanyam Kambala - GPLv3 "
+             +"(http://www.gnu.org/copyleft/gpl.html)"
+             );
         cli.addOption("h", "help", false, "Print this usage information.");
         
         CommandLine commandLine = cli.parse(argv);

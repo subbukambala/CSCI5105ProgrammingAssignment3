@@ -7,11 +7,13 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
+import java.util.List;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
 
-    public void jobResponse(TaskStats stats, String outputFilePath) 
+    public void jobResponse(TaskStats stats,List<Integer> results) 
         throws RemoteException;
 }

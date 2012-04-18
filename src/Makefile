@@ -3,7 +3,7 @@
 # define compiler and compiler flag variables
 #
 
-JFLAGS = -g -classpath ../jars/commons-cli-1.2.jar:.
+JFLAGS = -g -Xlint:unchecked -classpath ../jars/commons-cli-1.2.jar:.
 JC = javac
 
 
@@ -41,6 +41,8 @@ JC = javac
 
 CLASSES = \
 	Task.java \
+	MapTask.java \
+	ReduceTask.java \
 	Pair.java \
 	Logger.java \
 	ArgumentHandler.java \

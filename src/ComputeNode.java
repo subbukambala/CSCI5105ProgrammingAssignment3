@@ -100,21 +100,26 @@ public class ComputeNode extends UnicastRemoteObject
                       );
             failProbability = _failProbability;
 
-        lg.log(Level.FINER, "ComputeNode " 
+            lg.log(Level.FINER, "ComputeNode " 
                + id 
                + ": under load threshhold = " 
                + underLoadThreshold);
-        lg.log(Level.FINER, "ComputeNode " 
+            lg.log(Level.FINER, "ComputeNode " 
                + id 
                + ": over load threshhold = " 
                + overLoadThreshold);
-        lg.log(Level.FINER, "ComputeNode " 
+            lg.log(Level.FINER, "ComputeNode " 
                + id 
                + ": fail probability = " 
                + failProbability);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
+            lg.log(Level.SEVERE, "ComputeNode " 
+               + id 
+               + ": Constructor failure! " 
+               + underLoadThreshold);
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -196,11 +201,11 @@ public class ComputeNode extends UnicastRemoteObject
         }
         
         public void run() {
-            if (myTask.getCurrentTaskType().equals(Task.TaskType.MAP)) {
-                sort(myTask);
+            if (myTask.getTaskType().equals(Task.TaskType.MAP)) {
+                sort((MapTask)myTask);
             }
             else {
-                merge(myTask);
+                merge((ReduceTask)myTask);
             }
         }
     }
@@ -208,7 +213,7 @@ public class ComputeNode extends UnicastRemoteObject
     /**
      * map task
      */
-    private void sort(Task t) {
+    private void sort(MapTask t) {
         lg.log(Level.FINEST,"sort: Enter");
         Iterator<Integer> iterator = t.getData().iterator();
         while (iterator.hasNext()) {
@@ -216,7 +221,7 @@ public class ComputeNode extends UnicastRemoteObject
                    + iterator.next());
         }
         try {
-            server.aggregateTasks(t);
+            server.aggregateMapTasks(t);
         }
         catch (Exception e) {
             lg.log(Level.SEVERE,"Sort:Failure");
@@ -229,8 +234,17 @@ public class ComputeNode extends UnicastRemoteObject
     /**
      * reduce task
      */
-    private void merge(Task t) {
+    private void merge(ReduceTask t) {
         lg.log(Level.FINEST,"merge: Enter");
+        // TODO: Merge all the lists!
+        try {
+            server.aggregateReduceTasks(t);
+        }
+        catch (Exception e) {
+            lg.log(Level.SEVERE,"Merge:Failure");
+            e.printStackTrace();
+            System.exit(1);
+        }
         lg.log(Level.FINEST,"merge: Exit");
     }
     

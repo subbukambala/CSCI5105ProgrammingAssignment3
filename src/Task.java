@@ -5,38 +5,17 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-import java.util.List;
 import java.io.Serializable;
 
-public class Task implements Serializable {
+public abstract class Task<T> implements Serializable {
 
     private Integer taskId;
     
     private Pair<Integer, String> node;
     
-    private List<Integer> data;
-    
     public enum TaskType {MAP, REDUCE};
-    
-    private TaskType currentTaskType;
-    
+
     private Double expectedLoad;
-
-    public Double getExpectedLoad() {
-        return expectedLoad;
-    }
-
-    public void setExpectedLoad(Double expectedLoad) {
-        this.expectedLoad = expectedLoad;
-    }
-
-    public TaskType getCurrentTaskType() {
-        return currentTaskType;
-    }
-
-    public void setCurrentTaskType(TaskType currentTaskType) {
-        this.currentTaskType = currentTaskType;
-    }
 
     public Integer getTaskId() {
         return taskId;
@@ -46,6 +25,14 @@ public class Task implements Serializable {
         this.taskId = taskId;
     }
 
+    public Double getExpectedLoad() {
+        return expectedLoad;
+    }
+
+    public void setExpectedLoad(Double expectedLoad) {
+        this.expectedLoad = expectedLoad;
+    }
+
     public Pair<Integer, String>  getNode() {
         return node;
     }
@@ -53,6 +40,26 @@ public class Task implements Serializable {
     public void setNode(Pair<Integer, String>  node) {
         this.node = node;
     }
+
+
+    public abstract TaskType getTaskType();
+
+    public abstract void setData(T _data);
+    
+    public abstract T getData();
+   
+/*    private TaskType currentTaskType;
+    
+
+    public TaskType getCurrentTaskType() {
+        return currentTaskType;
+    }
+
+    public void setCurrentTaskType(TaskType currentTaskType) {
+        this.currentTaskType = currentTaskType;
+    }
+
+
     public void setData(List<Integer> _data) {
         data = _data;
     }
@@ -60,4 +67,5 @@ public class Task implements Serializable {
     public List<Integer> getData() {
         return data;
     }
+*/
 }
