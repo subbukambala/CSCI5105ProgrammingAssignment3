@@ -43,6 +43,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     @Override
     synchronized public void jobResponse(TaskStats stats, List<Integer> _results) throws RemoteException {
         results = _results;
+        if (_results == null) {
+            System.out.println("\nServer couldn't process job. All compute nodes are died");
+        }
         notify();
     }
 
@@ -96,8 +99,16 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     /**
      *
      */
-    private void getServerStats() {
-
+    private static void getServerStats() {
+        try {
+            String stats = server.getServerStats();
+            
+            lg.log(Level.INFO, "\nServer Stats :\n" + stats);
+            
+        } catch (RemoteException re) {
+            re.printStackTrace();
+        }
+        
     }
 
     public static void main(String[] argv) {
@@ -146,20 +157,18 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         }
 
         if (server == null) {
-            cli.usage("Server address required!");
+            cli.usage("Server address required!\n\n");
             System.exit(1);
         }
 
         if (commandLine.hasOption('n')) {
             nodeStatsSwitch = true;
-            cli.usage("Unimplemented option!");
+            cli.usage("Unimplemented option!\n\n");
             System.exit(1);
         }
 
         if (commandLine.hasOption('s')) {
             serverStatsSwitch = true;
-            cli.usage("Unimplemented option!");
-            System.exit(1);
         }
 
         String filepath = null;
@@ -178,8 +187,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             && (nodeStatsSwitch ^ fileSwitch))
            ) {
                 cli.usage("-n -s -f switches are mutually exclusive!\n");
-                System.exit(1);
-        }
+                //System.exit(1);
+            }
 
 
         Client client = null;
@@ -188,11 +197,20 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             Naming.rebind("Client", client);
             if ( fileSwitch ) {
                 client.submitJob(filepath);
-                Iterator<Integer> iterator = client.results.iterator();
-                while (iterator.hasNext()) {
-                    System.out.println(iterator.next());
+                System.out.println("\nSorted results: ");
+                if (client.results != null) {
+                    Iterator<Integer> iterator = client.results.iterator();
+                    while (iterator.hasNext()) {
+                        System.out.println(iterator.next());
+                    }
                 }
             }
+            else {
+                if (serverStatsSwitch) {
+                    getServerStats();
+                }
+            }
+            
             System.exit(1);
         } catch (Exception e) {
             System.out.println("Client failed: ");

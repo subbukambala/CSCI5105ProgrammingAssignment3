@@ -19,7 +19,7 @@ public class Logger {
 
     Logger(String subsys) {
         logger = java.util.logging.Logger.getLogger(subsys);
-        logger.setLevel(Level.ALL);
+        logger.setLevel(Level.INFO);
         Handler ch = new ConsoleHandler();
         ch.setLevel(Level.ALL);
 

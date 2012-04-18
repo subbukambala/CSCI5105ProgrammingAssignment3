@@ -7,25 +7,33 @@
 
 public class NodeStats {
 
-    public Integer currentLoad;
-    public Integer averageLoad;
+    public Double currentLoad;
+    public Double averageLoad;
     public Integer noOfJobs;
     public Integer noOfFaults;
     public Integer noOfMigratedJobs;
     
-    public Integer getCurrentLoad() {
+    public NodeStats() {
+        currentLoad = Double.valueOf(0);
+        averageLoad = Double.valueOf(0);
+        noOfFaults = Integer.valueOf(0);
+        noOfJobs = Integer.valueOf(0);
+        noOfMigratedJobs = Integer.valueOf(0);
+    }
+    
+    public Double getCurrentLoad() {
         return currentLoad;
     }
 
-    public void setCurrentLoad(Integer currentLoad) {
+    public void setCurrentLoad(Double currentLoad) {
         this.currentLoad = currentLoad;
     }
 
-    public Integer getAverageLoad() {
+    public Double getAverageLoad() {
         return averageLoad;
     }
 
-    public void setAverageLoad(Integer averageLoad) {
+    public void setAverageLoad(Double averageLoad) {
         this.averageLoad = averageLoad;
     }
 

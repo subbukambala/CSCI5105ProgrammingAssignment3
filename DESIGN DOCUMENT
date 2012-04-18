@@ -1,13 +1,6 @@
-
-
-Questions:
-----------
-Q)Does server needs to be informed while transferring job?
-A) IMO, yes. Because server is responsible for fault-tolerance.
-
-
-
 Design:
+------
+
 1) DataTransfer Cycle
     File is transferred separately (to handle cases where data is not fit into main memory)
 
@@ -22,6 +15,16 @@ Draw design diagram
 
 heart.beat.interval for every 30 secs...
 
+Flow of request - diagram
+
+Components:
+----------
+Server:
+
+Compute Node:
+a) Sender initiated process migration
+
+Client:
 
 Configuration:
 --------------
@@ -44,6 +47,11 @@ duplicate values
 
 Print node stats
 Print task stats
+what if all nodes are died?
+test case with probability 0 
+
+test case with probability 100
+Single node died
 
 
 

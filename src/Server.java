@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -37,7 +38,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     private Integer myMaxTaskId;
     
+    /**
+     * Contains statistics of whole distributed system(DS).
+     */
     private ServerStats myServerStats;
+    
+    /**
+     * Contains statistics of a task. (Not maintaining list because DS handles job at a time)
+     */
+    private TaskStats myTaskStats;
     
     private List<MapTask> myMaps;
 
@@ -48,7 +57,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     /**
      * Contains registered Compute node list.
      */
-    private List<Pair<Integer, String>> myComputeNodesList;
+    private Vector<Pair<Integer, String>> myComputeNodesList;
     
     /**
      * Key is node id, value is time at which last message is called. 
@@ -64,7 +73,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         myMaxTaskId = 0;
         myServerStats =  new ServerStats();
         
-        myComputeNodesList = new ArrayList<Pair<Integer,String>> ();
+        myComputeNodesList = new Vector<Pair<Integer,String>> ();
         myMaps = new ArrayList<MapTask> ();
         myReduce = new ReduceTask();
         List<MapTask> list = new ArrayList<MapTask>();
@@ -76,7 +85,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         
         maxComputeNodeId++;
         
-        lg.log(Level.FINER, "ComputeNode " + maxComputeNodeId + " joined.");
+        lg.log(Level.INFO, "ComputeNode " + maxComputeNodeId + " joined.");
         
         myComputeNodesList.add(new Pair<Integer, String>(maxComputeNodeId, getClientHost()));
         return maxComputeNodeId;
@@ -118,13 +127,30 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      * 
      * @param nodeId
      */
-    private void reassignTasks(Integer nodeId) {
+    private void reassignTasks(Integer nodeId) throws Exception {
+        if (myMaps.size() == 0) {
+            return;
+        }
+        
+        if (myComputeNodesList.size() == 0) {
+            lg.log(Level.SEVERE, "All compute nodes are died. Inform client gracefully");
+            throw new Exception("All Compute nodes are died");
+        }
+        
         for (Integer i = 0; i < myMaps.size(); i++) {
-            if (myMaps.get(i).getNode().fst() == nodeId) {
+            if (myMaps.get(i).getNode() == null || myMaps.get(i).getNode().fst() == nodeId) {
                 int j = 0;
                 while (myComputeNodesList.get(j) != null && myComputeNodesList.get(j).fst() == nodeId) {
                     j++;
                 }
+                
+                // If all compute nodes are died.
+                if (j == 0 || j == myComputeNodesList.size()) {
+                    System.out.println("All compute nodes are died");
+                    client.jobResponse(null, null);
+                    return;
+                }
+                
                 try {
                     ComputeNodeInterface computeNode = (ComputeNodeInterface) 
                                 Naming.lookup("//" + myComputeNodesList.get(j).snd() + "/ComputeNode" + myComputeNodesList.get(j).fst());
@@ -152,9 +178,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      * 
      * @param nodeId
      */
-    private void releaseNode(Integer nodeId) {
+    private void releaseNode(Pair<Integer, String> node) {
         // remove entry
-        myComputeNodesList.remove(nodeId);
+        lg.log(Level.INFO, "Compute Node " + node.fst() + " is declared as DEAD");
+        myComputeNodesList.remove(node);
     }
 
     @Override
@@ -170,14 +197,29 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         public void run() {
             try {
                 for (Integer i = 0; i < myComputeNodesList.size(); i++) {
-                    Long diff = 
-                        System.currentTimeMillis()
-                        - heartBeatStatus.get(myComputeNodesList.get(i).fst());
-                    if (diff > 30 * 1000) {
-                        Integer nodeId = myComputeNodesList.get(i).fst();
-                        releaseNode(nodeId);
-                        reassignTasks(nodeId);
-                        i--;
+                    if (myComputeNodesList.get(i) != null && heartBeatStatus.get(myComputeNodesList.get(i).fst()) != null) {
+                        Long diff = 
+                            System.currentTimeMillis()
+                            - heartBeatStatus.get(myComputeNodesList.get(i).fst());
+                        if (diff > 30 * 1000) {
+                            Integer nodeId = myComputeNodesList.get(i).fst();
+                            
+                            // Incrementing no of faults
+                            myServerStats.getNoOfFaults().incrementAndGet();
+                            
+                            releaseNode(myComputeNodesList.get(i));
+                            
+                            reassignTasks(nodeId);
+                            i--;
+                        }
+                    }
+                    else {
+                        if (myComputeNodesList.get(i) != null && heartBeatStatus.get(myComputeNodesList.get(i).fst()) == null) {
+                            reassignTasks(myComputeNodesList.get(i).fst());
+                            
+                            releaseNode(myComputeNodesList.get(i));
+                        }
+                        System.out.println("============= NULL " + i);
                     }
                 }
             } catch (Exception e) {
@@ -192,8 +234,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     synchronized public Boolean submitJob(List<Integer> data) throws Exception
     {
         lg.log(Level.FINEST, "submitJob(list): Entry");
-
-
+        
+        myTaskStats =  new TaskStats();
+        
+        // Incrementing the no of jobs
+        myServerStats.getNoOfJobs().incrementAndGet();
         
         // Ignore any submitted jobs if another job is in progress
         if(myReduce.getData().size()!=0) {
@@ -258,22 +303,36 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Task list of size "
                 + myMaps.size() + " created.");
 
-        
         // Assigning tasks to nodes
         for (i = 0; i < myMaps.size(); i++) {
-            try {
-                url = "//" 
-                    + myComputeNodesList.get(i).snd() 
-                    + "/ComputeNode" 
-                    + myComputeNodesList.get(i).fst();
-                ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                    Naming.lookup(url);
-                computeNode.executeTask(myMaps.get(i));
-            } catch (Exception e) {
-                lg.log(Level.SEVERE,"submitJob(list): failure on executeTask "
-                       +"with url = "+ url);
-                e.printStackTrace();
-                System.exit(1);
+            
+            //
+            // Iterates through all nodes in case if a node is
+            // down but not yet cleared from list.
+            //
+            int j = 0;
+            boolean isAssigned = false;
+            while (j + i < 2 * myComputeNodesList.size()) {
+                try {
+                    url = "//" 
+                        + myComputeNodesList.get((i + j) % myComputeNodesList.size()).snd() 
+                        + "/ComputeNode" 
+                        + myComputeNodesList.get((i + j) % myComputeNodesList.size()).fst();
+                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
+                        Naming.lookup(url);
+                    computeNode.executeTask(myMaps.get(i));
+                    isAssigned = true;
+                    j++;
+                } catch (Exception e) {
+                    lg.log(Level.SEVERE,"submitJob(list): failure on executeTask "
+                           +"with url = "+ url);
+                    //e.printStackTrace();
+                    //System.exit(1);
+                }
+            }
+            
+            if (isAssigned == false) {
+                throw new Exception ("All nodes are died. Handle it gracefully!");
             }
         }
         lg.log(Level.FINEST, "submitJob(list): Exit");        
@@ -315,7 +374,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 lg.log(Level.SEVERE,"aggregateMapTasks: failure on "
                        +"executeTask with url = "+ url);
                 e.printStackTrace();
-                System.exit(1);
+                //System.exit(1);
             }
             lg.log(Level.FINEST, "aggregateMapTasks: Merge sent to "+url);
         }
@@ -328,9 +387,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public Boolean aggregateReduceTasks(ReduceTask t) throws RemoteException {
 
         lg.log(Level.FINEST, "aggregateReduceTasks: Enter");
-        if(myMaps.size()!=0) {
+        if(myMaps.size() != 0) {
             lg.log(Level.SEVERE,"aggregateReduceTasks: myMaps is non-empty!.");
-            System.exit(1);
+            //System.exit(1);
         }
         
         List<Integer> sortedlist = new ArrayList<Integer>();
@@ -348,14 +407,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     
     @Override
     public String getServerStats() throws RemoteException {
-        return "";
+        
+        StringBuffer buf = new StringBuffer();
+        buf.append("No of handled Jobs: " + myServerStats.getNoOfJobs());
+        buf.append("\nNo of task transfers: " + myServerStats.getNoOfTaskMigrations());
+        buf.append("\nNo of redundant tasks: " + myServerStats.getNoOfRedundantTasks());
+        buf.append("\nNo of Faults: " + myServerStats.getNoOfFaults());
+        
+        return buf.toString();
     }
     
     @Override
     public void updateTaskTransfer(Task task) throws RemoteException {
         // Incrementing task migration
-        myServerStats
-            .setNoOfTaskMigrations(myServerStats.getNoOfTaskMigrations() + 1);
+        myServerStats.getNoOfTaskMigrations().incrementAndGet();
         
         for (Integer i = 0; i < myMaps.size(); i++) {
             if(myMaps.get(i).getTaskId() == task.getTaskId()) {

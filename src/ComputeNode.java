@@ -28,7 +28,7 @@ public class ComputeNode extends UnicastRemoteObject
 
     private static String defaultconf = "../cfg/default.config";
 
-    private Logger lg;
+    private static Logger lg;
     
     private ServerInterface server;
     
@@ -43,6 +43,9 @@ public class ComputeNode extends UnicastRemoteObject
     private Double heartBeatInterval;
     
     private NodeStats nodeStats;
+    
+    private Boolean isExecutingSortTask = false;
+    
     
     /**
      * Used in simulating load
@@ -61,7 +64,7 @@ public class ComputeNode extends UnicastRemoteObject
         id = server.registerNode();
         
         lg = new Logger("Compute Node:" + id);
-        lg.log(Level.FINER, "ComputeNode " + id + " started.");
+        lg.log(Level.INFO, "ComputeNode " + id + " started.");
         
         // If a config file was specified
         if(configFile == null) {
@@ -137,9 +140,9 @@ public class ComputeNode extends UnicastRemoteObject
             for (Integer i = 0; i < computeNodes.size(); i++) {
                 if (computeNodes.get(i).fst() != id) {
                     ComputeNodeInterface c;
+                    String url =  "//" + computeNodes.get(i).snd() + "/ComputeNode" + computeNodes.get(i).fst();
                     try {
-                        c = (ComputeNodeInterface) Naming.lookup("//" + computeNodes.get(i).snd()
-                                + "/ComputeNode");
+                        c = (ComputeNodeInterface) Naming.lookup(url);
 
                         // Requesting node to take up the task 
                         Boolean isAccepted = c.taskTransferRequest(task);
@@ -150,6 +153,10 @@ public class ComputeNode extends UnicastRemoteObject
                             server.updateTaskTransfer(task);
                             return;
                         }
+                    } catch (ConnectException e) {
+                        lg.log(Level.SEVERE, "Node with  "
+                           + "with url = "+ url + "is not responding");
+                           
                     } catch (MalformedURLException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -175,7 +182,7 @@ public class ComputeNode extends UnicastRemoteObject
             lg.log(Level.FINEST, " HeartBeatHandler.run: Enter");
 
             try {
-                if (getProbability() > failProbability) {
+                if (! isExecutingSortTask || getProbability() > failProbability) {
                     lg.log(Level.INFO, " HeartBeatHandler.run: Alive.");
 
                     server.heartBeatMsg(id);
@@ -183,12 +190,12 @@ public class ComputeNode extends UnicastRemoteObject
                 else {
                     // Turning off node.
                     lg.log(Level.WARNING, 
-                           " HeartBeatHandler.run: DEAD!(exit)");
+                           " **HeartBeatHandler.run: DEAD!(exit)");
                     System.exit(0);
                 }
             } catch (RemoteException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                lg.log(Level.SEVERE, 
+                " **Unable to connect to server" + e.getMessage());
             }
             lg.log(Level.FINEST, " HeartBeatHandler.run: Exit");
         }
@@ -214,7 +221,17 @@ public class ComputeNode extends UnicastRemoteObject
      * map task
      */
     private void sort(MapTask t) {
+        
         lg.log(Level.FINEST,"sort: Enter");
+        // This is to make sure compute node fails only during sorting.
+        isExecutingSortTask = true;
+        
+        try {
+            Thread.sleep(30 * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         Iterator<Integer> iterator = t.getData().iterator();
         while (iterator.hasNext()) {
             lg.log(Level.FINER, "sort: Received integer -> " 
@@ -229,6 +246,9 @@ public class ComputeNode extends UnicastRemoteObject
             System.exit(1);
         }
         lg.log(Level.FINEST,"sort: Exit");
+        
+        // This is to make sure compute node fails only during sorting.
+        isExecutingSortTask = false;
     }
     
     /**
@@ -236,6 +256,14 @@ public class ComputeNode extends UnicastRemoteObject
      */
     private void merge(ReduceTask t) {
         lg.log(Level.FINEST,"merge: Enter");
+        
+        try {
+            Thread.sleep(10 * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        
         // TODO: Merge all the lists!
         try {
             server.aggregateReduceTasks(t);
@@ -394,8 +422,12 @@ public class ComputeNode extends UnicastRemoteObject
             HeartBeatHandler h = node.new HeartBeatHandler();
             t.schedule(h, 0, 30 * 1000);
 
-        } catch (Exception e) {
-            System.out.println("FileServer exception: ");
+        } catch (ConnectException ce) {
+            lg.log(Level.SEVERE, "Server is not alive");
+            ce.printStackTrace();
+        }
+        catch (Exception e) {
+            lg.log(Level.SEVERE, "Exception in file server");
             e.printStackTrace();
         }
     }

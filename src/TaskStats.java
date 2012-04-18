@@ -13,6 +13,14 @@ public class TaskStats {
     private Double computationTime;
     private Double dataTransferTime;
 
+    public TaskStats() {
+        noOfMapTasks = Integer.valueOf(0);
+        noOfReduceTasks = Integer.valueOf(0);
+        totalTime = Double.valueOf(0);
+        computationTime = Double.valueOf(0);
+        dataTransferTime = Double.valueOf(0);
+    }
+    
     public Integer getNoOfMapTasks() {
         return noOfMapTasks;
     }
@@ -52,5 +60,4 @@ public class TaskStats {
     public void setDataTransferTime(double dataTransferTime) {
         this.dataTransferTime = dataTransferTime;
     }
-
 }
