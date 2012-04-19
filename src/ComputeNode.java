@@ -261,11 +261,11 @@ public class ComputeNode extends UnicastRemoteObject
         // This is to make sure compute node fails only during sorting.
         isExecutingSortTask = true;
         
-        /*try {
+        try {
             Thread.sleep(30 * 1000);
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
         
         Iterator<Integer> iterator = t.getData().iterator();
         while (iterator.hasNext()) {
@@ -537,7 +537,7 @@ public class ComputeNode extends UnicastRemoteObject
             // Scheduling heart beat message handler
             Timer t = new Timer();
             HeartBeatHandler h = node.new HeartBeatHandler();
-            t.schedule(h, 0, 30 * 1000);
+            t.schedule(h, 0, 3 * 1000);
 
         } catch (ConnectException ce) {
             lg.log(Level.SEVERE, "Server is not alive");

@@ -133,7 +133,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
         
         if (myComputeNodesList.size() == 0) {
-            lg.log(Level.SEVERE, "All compute nodes are died.");
+            lg.log(Level.SEVERE, "All computenodes are dead.");
 
             client.jobResponse(null, null);
             
@@ -155,7 +155,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 
                 // If all compute nodes are died.
                 if (j == 0 || j == myComputeNodesList.size()) {
-                    System.out.println("All compute nodes are died");
+                    System.out.println("All compute nodes are dead");
                     
                     client.jobResponse(null, null);
                     
@@ -395,7 +395,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     // XXX: Does not handle errant tasks
     synchronized public Boolean aggregateMapTasks(MapTask t) throws RemoteException {
         lg.log(Level.FINEST, "aggregateMapTasks: Enter");
-        lg.log(Level.FINER,"aggregateMapTasks: Have  "
+        lg.log(Level.FINER,"aggregateMapTasks: Have "
                + myReduce.getData().size() +" MapTasks, waiting for "
                + myMaps.size());
         
