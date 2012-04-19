@@ -205,7 +205,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 if (client.results != null) {
                     Iterator<Integer> iterator = client.results.iterator();
                     while (iterator.hasNext()) {
-                        System.out.println(iterator.next());
+                        System.out.println("result = " + iterator.next());
                     }
                 }
             }

@@ -493,7 +493,7 @@ public class ComputeNode extends UnicastRemoteObject
         // TODO: If these flags are no longer mutually exclusive this
         // code should be adjusted to account for whatever constraint are
         // needed.
-        if ( (constantload == null) && (gaussian==null)) {
+        if ( (constantload != null) && (gaussian!=null)) {
             cli.usage("-g -c switches are mutually exclusive!\n");
             System.exit(1);
         }
