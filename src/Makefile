@@ -40,6 +40,7 @@ JC = javac
 #
 
 CLASSES = \
+	RandomGaussian.java \
 	Task.java \
 	MapTask.java \
 	ReduceTask.java \

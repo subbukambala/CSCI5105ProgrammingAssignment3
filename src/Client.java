@@ -71,7 +71,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             // The format of the file is very specific.
             // Each integer will be separated by a new line.
             while ((strInt = br.readLine()) != null) {
-                System.out.println(strInt);
                 Integer i = new Integer(strInt);
                 data.add(i);
             }
@@ -85,8 +84,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         }
         // Close the input stream
         in.close();
-        server.submitJob(data);        
-        synchronized(this){wait();}
+        if (server.submitJob(data))
+            synchronized(this){wait();}
+        else
+            System.out.println("Server has declined job!");
     }
 
     /**
@@ -181,7 +182,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             }
 
         }
-        
+
+        // TODO: If these flags are no longer mutually exclusive this
+        // code should be adjusted to account for whatever constraint are
+        // needed.
         if (
             !((serverStatsSwitch ^ fileSwitch) 
             && (nodeStatsSwitch ^ fileSwitch))
@@ -201,7 +205,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 if (client.results != null) {
                     Iterator<Integer> iterator = client.results.iterator();
                     while (iterator.hasNext()) {
-                        System.out.println(iterator.next());
+                        System.out.println("result = " + iterator.next());
                     }
                 }
             }
