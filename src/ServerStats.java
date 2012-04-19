@@ -13,19 +13,16 @@ public class ServerStats {
     private AtomicInteger noOfFaults;
     private AtomicInteger noOfRedundantTasks;
     private AtomicInteger noOfTaskMigrations;
-
+    private AtomicInteger noOfFailedJobs;
+   
     public ServerStats () {
         noOfJobs = new AtomicInteger();
         noOfFaults = new AtomicInteger();
         noOfRedundantTasks = new AtomicInteger();
         noOfTaskMigrations = new AtomicInteger();
+        noOfFailedJobs = new AtomicInteger();
     }
     
-    private AtomicInteger AtomicInteger() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public AtomicInteger getNoOfJobs() {
         return noOfJobs;
     }
@@ -56,5 +53,13 @@ public class ServerStats {
 
     public void setNoOfTaskMigrations(AtomicInteger noOfTaskMigrations) {
         this.noOfTaskMigrations = noOfTaskMigrations;
+    }
+    
+    public AtomicInteger getNoOfFailedJobs() {
+        return noOfFailedJobs;
+    }
+
+    public void setNoOfFailedJobs(AtomicInteger noOfFailedJobs) {
+        this.noOfFailedJobs = noOfFailedJobs;
     }
 }

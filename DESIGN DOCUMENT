@@ -31,6 +31,12 @@ Configuration:
 
 
 
+Terminalogy:
+------------
+Job: client submits the job
+Task: A Job is splitted into tasks.
+
+
 
 Assumptions:
 -----------
@@ -44,6 +50,7 @@ Simple test cases:
 Sorting one value
 sorting 10 values
 duplicate values
+Empty test data
 
 Print node stats
 Print task stats
@@ -51,12 +58,13 @@ what if all nodes are died?
 test case with probability 0 
 
 test case with probability 100
+     --> server is sending any resul(even if two compute nodes are died)
+
 Single node died
 
 
+>> Explain about format of stats
 
 
-Terminalogy:
-Job: client submits the job
-Task: A Job is splitted into tasks.
+
 
