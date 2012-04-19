@@ -155,7 +155,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 
                 // If all compute nodes are died.
                 if (j == 0 || j == myComputeNodesList.size()) {
-                    System.out.println("All compute nodes are dead");
+                    System.out.println("All compute nodes are dead (j="+j
+                                       +" and node size is "
+                                       +myComputeNodesList.size());
                     
                     client.jobResponse(null, null);
                     
