@@ -60,4 +60,5 @@ wait ${serverpid}
 
 diff ${OUTPREFIX}_rubric.txt ${OUTPREFIX}_response.txt > ${OUTPREFIX}_diff.txt
 
+killall -9 java
 
