@@ -310,30 +310,33 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             // Iterates through all nodes in case if a node is
             // down but not yet cleared from list.
             //
-            int j = 0;
             boolean isAssigned = false;
-            while (j + i < 2 * myComputeNodesList.size()) {
+            for (int j=0; j < myComputeNodesList.size(); j++) {
+                int k = i+j;
+                if(k>myComputeNodesList.size()) k %=myComputeNodesList.size(); 
                 try {
                     url = "//" 
-                        + myComputeNodesList.get((i + j) % myComputeNodesList.size()).snd() 
+                        + myComputeNodesList.get(k).snd() 
                         + "/ComputeNode" 
-                        + myComputeNodesList.get((i + j) % myComputeNodesList.size()).fst();
+                        + myComputeNodesList.get(k).fst();
                     ComputeNodeInterface computeNode = (ComputeNodeInterface) 
                         Naming.lookup(url);
                     computeNode.executeTask(myMaps.get(i));
                     isAssigned = true;
-                    j++;
+                    break;
                 } catch (Exception e) {
-                    lg.log(Level.SEVERE,"submitJob(list): failure on executeTask "
-                           +"with url = "+ url);
-                    //e.printStackTrace();
-                    //System.exit(1);
+                    lg.log(Level.SEVERE,"submitJob(list): failure on "
+                           +"executeTask with url = "+ url);
+                }
+
+                if (isAssigned == false) {
+                    lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
+                           +"are dead. Ignoring job!");
+                    return false;
                 }
             }
             
-            if (isAssigned == false) {
-                throw new Exception ("All nodes are died. Handle it gracefully!");
-            }
+
         }
         lg.log(Level.FINEST, "submitJob(list): Exit");        
         myReduce.getData().clear();

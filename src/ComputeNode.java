@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
-import org.apache.commons.cli.CommandLine;
+import java.util.Collections;
 import java.util.Iterator;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Exception;
 import java.net.MalformedURLException;
-import java.util.Collections;
-
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 public class ComputeNode extends UnicastRemoteObject 
@@ -42,6 +42,10 @@ public class ComputeNode extends UnicastRemoteObject
     private Double overLoadThreshold;
     
     private Double failProbability;
+
+    private Double loadConstant;
+    
+    private Pair<Double,Double> loadGaussian;
     
     private Double heartBeatInterval;
     
@@ -59,10 +63,13 @@ public class ComputeNode extends UnicastRemoteObject
                        ,Double _underLoadThreshold
                        ,Double _overLoadThreshold
                        ,Double _failProbability
+                       ,Double _loadConstant
+                       ,Pair<Double,Double> _loadGaussian
                        ,String  configFile) throws Exception {
         
         server = (ServerInterface) Naming.lookup("//" + servername 
                                                  + "/Server");
+
 
         id = server.registerNode();
         
@@ -119,6 +126,20 @@ public class ComputeNode extends UnicastRemoteObject
                + ": fail probability = " 
                + failProbability);
 
+            loadConstant = _loadConstant;
+            if(loadConstant != null)
+                lg.log(Level.FINER, "ComputeNode " 
+                       + id 
+                       + ": load constant = " 
+                       + loadConstant);
+
+            loadGaussian = _loadGaussian;
+            if(loadGaussian != null)
+                lg.log(Level.FINER, "ComputeNode " 
+                       + id 
+                       + ": load gaussian = " 
+                       + loadGaussian.fst()+","+loadGaussian.snd());
+
         } catch (Exception e) {
             lg.log(Level.SEVERE, "ComputeNode " 
                + id 
@@ -138,12 +159,13 @@ public class ComputeNode extends UnicastRemoteObject
         
         Double load = getCurrentLoad();
         if (load > overLoadThreshold) {
-            List<Pair<Integer, String> > computeNodes = server.getActiveNodes();
+            List<Pair<Integer, String>> computeNodes = server.getActiveNodes();
             
             for (Integer i = 0; i < computeNodes.size(); i++) {
                 if (computeNodes.get(i).fst() != id) {
                     ComputeNodeInterface c;
-                    String url =  "//" + computeNodes.get(i).snd() + "/ComputeNode" + computeNodes.get(i).fst();
+                    String url =  "//" + computeNodes.get(i).snd() 
+                        + "/ComputeNode" + computeNodes.get(i).fst();
                     try {
                         c = (ComputeNodeInterface) Naming.lookup(url);
 
@@ -229,11 +251,11 @@ public class ComputeNode extends UnicastRemoteObject
         // This is to make sure compute node fails only during sorting.
         isExecutingSortTask = true;
         
-        try {
+        /*try {
             Thread.sleep(30 * 1000);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         
         Iterator<Integer> iterator = t.getData().iterator();
         while (iterator.hasNext()) {
@@ -274,9 +296,7 @@ public class ComputeNode extends UnicastRemoteObject
                 Integer mini = null;
                 int i = 0;
                 
-                lg.log(Level.FINER,"merge: list size = " + list.size());
                 for(;i<list.size();i++) {
-                    lg.log(Level.FINER,"merge: "+i+ " " +mini);
 
                     if(mini == null 
                        || list.get(i).getData().get(0) 
@@ -285,17 +305,13 @@ public class ComputeNode extends UnicastRemoteObject
                     }  
                 }
                 
-                lg.log(Level.FINER,"merge: "+list.get(mini).getData().get(0));
                 rv.add(list.get(mini).getData().get(0));
                 // XXX : remove must behave sensibly here and decrement the 
                 // size
                 list.get(mini).getData().remove(0);
                 if(list.get(mini).getData().size() == 0) {
-                    lg.log(Level.FINER,"merge: "+list.size());
                     if(list.remove((int)mini)==null) 
                         lg.log(Level.SEVERE,"merge: remove returned null!");
-                        
-                    lg.log(Level.FINER,"merge: "+list.size());
                 }
             }
             MapTask mt = new MapTask();
@@ -356,10 +372,18 @@ public class ComputeNode extends UnicastRemoteObject
             
         } catch(Exception e) {
             lg.log(Level.WARNING, "getCurrentLoad: Unable to parse system "
-                   +" load information! Using " +currLoad);
+                   +" load information! Using constant,guassian or 0 ");
+
+                   
         }
-        
-        return currLoad * 100;
+        if(loadConstant!=null) return loadConstant;
+        else if(loadGaussian!=null) 
+            return RandomGaussian.getGaussian
+                (
+                 loadGaussian.fst()
+                 ,loadGaussian.snd()
+                 );
+        else return 0.0;        
     }
     
     @Override
@@ -391,19 +415,24 @@ public class ComputeNode extends UnicastRemoteObject
         Double underLoad = null;
         Double overLoad = null;
         Double failProb = null;
+        Double constantload = null;
+        Pair<Double,Double> gaussian = null;
         String fileName = null;
 
         ArgumentHandler cli = new ArgumentHandler
             (
-             "FileServer [-h] [collector address] -u -o"
-             , "TBD - Currently does nothing."
+             "FileServer [-h] [collector address] [-u underload] "
+             +"[-o overload] [-c constant_load|-g mean variance] "
+             +"[-p fail_prob] [-f configfile]"
              ,
              "Bala Subrahmanyam Kambala, Daniel William DaCosta - "
              +"GPLv3 (http://www.gnu.org/copyleft/gpl.html)"
+             ,""
              );
         cli.addOption("h", "help", false, "Print this usage information.");
         cli.addOption("u", "underLoad", true, "Under load threshold");
         cli.addOption("o", "overLoad", true, "Over load threshold");
+        cli.addOption("c", "constant", true, "Generate constant load");
         cli.addOption("p", "probability", true, "Fail Probability(0-100)");
         cli.addOption("f", "configfile", true
                       ,"The configuration file to read parameters from. "
@@ -411,6 +440,16 @@ public class ComputeNode extends UnicastRemoteObject
                       +"Command line arguments will override config file "
                       +"arguments."
                       );
+        cli.addOption(OptionBuilder
+                      .withLongOpt("gaussian")
+                      .hasArgs(2)
+                      .withDescription
+                      (
+                        "Generate a gaussian probability model for load "
+                        + "simulation. The first parameter is the mean "
+                        + "and the second parameter is the variance."
+                      )
+                      .create('g')); 
         
 
 
@@ -436,6 +475,30 @@ public class ComputeNode extends UnicastRemoteObject
             failProb = Double.parseDouble(commandLine.getOptionValue('p'));
         }
 
+        if (commandLine.hasOption('c')) {
+            // TODO : Ensure the number is within range
+            constantload = Double.parseDouble(commandLine.getOptionValue('c'));
+        }
+
+        if (commandLine.hasOption('g')) {
+            // TODO : Ensure the number is within range
+            gaussian = new Pair<Double,Double>
+                (
+                 Double.parseDouble(commandLine.getOptionValues('g')[0])
+                 ,Double.parseDouble(commandLine.getOptionValues('g')[1])
+                );
+        }
+        
+
+        // TODO: If these flags are no longer mutually exclusive this
+        // code should be adjusted to account for whatever constraint are
+        // needed.
+        if ( (constantload == null) && (gaussian==null)) {
+            cli.usage("-g -c switches are mutually exclusive!\n");
+            System.exit(1);
+        }
+       
+
         if (commandLine.hasOption('f')) {
             fileName = commandLine.getOptionValue('f');
         }
@@ -448,6 +511,8 @@ public class ComputeNode extends UnicastRemoteObject
                                 ,underLoad
                                 ,overLoad
                                 ,failProb
+                                ,constantload
+                                ,gaussian
                                 ,fileName);
             
             Naming.rebind("ComputeNode" 
