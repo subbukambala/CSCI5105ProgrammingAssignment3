@@ -156,11 +156,15 @@ public class ComputeNode extends UnicastRemoteObject
     
     @Override
     public void executeTask(Task task) throws RemoteException {
-        
+       
         Double load = getCurrentLoad();
+        // If load is over the treshold
         if (load > overLoadThreshold) {
+            
+            // Get active nodes
             List<Pair<Integer, String>> computeNodes = server.getActiveNodes();
             
+            // Ask each node whether it can takes your load?
             for (Integer i = 0; i < computeNodes.size(); i++) {
                 if (computeNodes.get(i).fst() != id) {
                     ComputeNodeInterface c;
@@ -169,11 +173,17 @@ public class ComputeNode extends UnicastRemoteObject
                     try {
                         c = (ComputeNodeInterface) Naming.lookup(url);
 
+                        lg.log(Level.FINEST, "Requesting node " + computeNodes.get(i).fst() +
+                                " for task transfer");
+                        
                         // Requesting node to take up the task 
                         Boolean isAccepted = c.taskTransferRequest(task);
                         
                         // If transfer request is accepted, update server
                         if (isAccepted) {
+                            lg.log(Level.INFO, "Node " + computeNodes.get(i).fst() +
+                            " accepted the task transfer request");
+                    
                             task.setNode(computeNodes.get(i));
                             server.updateTaskTransfer(task);
                             return;
@@ -368,22 +378,28 @@ public class ComputeNode extends UnicastRemoteObject
            
             currLoad = Double.parseDouble(data[data.length - 2]);
             
-            lg.log(Level.FINER, " getCurrentLoad: Load =" + currLoad);
-            
         } catch(Exception e) {
             lg.log(Level.WARNING, "getCurrentLoad: Unable to parse system "
                    +" load information! Using constant,guassian or 0 ");
 
                    
         }
-        if(loadConstant!=null) return loadConstant;
-        else if(loadGaussian!=null) 
-            return RandomGaussian.getGaussian
-                (
-                 loadGaussian.fst()
-                 ,loadGaussian.snd()
-                 );
-        else return 0.0;        
+        if(loadConstant!=null) {
+            lg.log(Level.FINER, " getCurrentLoad: Load =" + loadConstant);
+            return loadConstant;
+        }
+        else if(loadGaussian!=null)  {
+            currLoad = RandomGaussian.getGaussian
+            (
+                    loadGaussian.fst()
+                    ,loadGaussian.snd()
+                    );
+            return currLoad;
+        }
+        else  {
+            lg.log(Level.FINER, " getCurrentLoad: Load =0.0");
+            return 0.0;        
+        }
     }
     
     @Override

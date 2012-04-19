@@ -167,7 +167,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 
                 try {
                     ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                                Naming.lookup("//" + myComputeNodesList.get(j).snd() + "/ComputeNode" + myComputeNodesList.get(j).fst());
+                                Naming.lookup("//" + myComputeNodesList.get(j).snd() 
+                                        + "/ComputeNode" + myComputeNodesList.get(j).fst());
+                    
+                    lg.log(Level.INFO, "Map Task has been re-assigned to node " + myComputeNodesList.get(j).fst());
                     
                     // Assigning ith task to J node
                     computeNode.executeTask(myMaps.get(i));
@@ -367,16 +370,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
             // All nodes are died
                 if (isAssigned == false) {
-                 clearJobData();
-                
-                client.jobResponse(null, null);
+                    clearJobData();
+                    
+                    client.jobResponse(null, null);
                 
                     lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
                            +"are dead. Ignoring job!");
                     return false;
                
-                
-                    return false;
                 }
             }
             
@@ -385,7 +386,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Exit");        
         
         // Clearing job data
-        clearJobData();
+        //clearJobData();
         
         return true;
     }
@@ -413,8 +414,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             
             // Iterating through the list of nodes incase if all nodes are died.
             boolean isAssigned = false;
-            int j = 0;
-            while (j < myComputeNodesList.size()) {
+            for (int j = 0; j < myComputeNodesList.size(); j++) {
                 try {
                     // XXX: Need to check if there is any compute node in 
                     // our list!
@@ -426,15 +426,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         Naming.lookup(url);
                     
                     isAssigned = true;
+                    
                     computeNode.executeTask(myReduce);
+                    break;
                 } catch (Exception e) {
                     lg.log(Level.SEVERE,"aggregateMapTasks: failure on "
                            +"executeTask with url = "+ url);
                     e.printStackTrace();
                     //System.exit(1);
                 }
-                j++;
             }
+            // Couldn't be able to assign a reduce task
             if (! isAssigned) {
                 clearJobData();
                 client.jobResponse(null, null);
@@ -488,6 +490,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     
     @Override
     public void updateTaskTransfer(Task task) throws RemoteException {
+        lg.log(Level.INFO, "Task has been migrated to node: " + task.getNode().fst());
+        
         // Incrementing task migration
         myServerStats.getNoOfTaskMigrations().incrementAndGet();
         
