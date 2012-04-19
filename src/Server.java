@@ -145,19 +145,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         for (Integer i = 0; i < myMaps.size(); i++) {
             if (myMaps.get(i).getNode() == null || myMaps.get(i).getNode().fst() == nodeId) {
                 int j = 0;
-                while (myComputeNodesList != null && 
-                       ! myComputeNodesList.isEmpty() && 
-                       myComputeNodesList.get(j) != null && 
-                       myComputeNodesList.get(j).fst() == nodeId) 
-                {
-                    j++;
-                }
+                // If we have nodes in the list, loop through them ..
+                for (; j<myComputeNodesList.size(); j++)
+                    if(myComputeNodesList.get(j) != null 
+                       && myComputeNodesList.get(j).fst() != nodeId) 
+                        break;
                 
                 // If all compute nodes are died.
-                if (j == 0 || j == myComputeNodesList.size()) {
+                if (myComputeNodesList.size()==0 
+                    || j == myComputeNodesList.size()) {
                     System.out.println("All compute nodes are dead (j="+j
                                        +" and node size is "
-                                       +myComputeNodesList.size());
+                                       +myComputeNodesList.size()+")");
                     
                     client.jobResponse(null, null);
                     
