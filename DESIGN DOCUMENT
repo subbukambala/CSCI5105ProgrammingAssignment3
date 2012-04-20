@@ -1,69 +1,92 @@
-Design:
-------
 
-1) DataTransfer Cycle
-    File is transferred separately (to handle cases where data is not fit into main memory)
+Assumptions:
+-----------
+1) Data is read from a file by client and then onwards data is transferred between server/compute node/client as a list of integers.
+2) Assuming data is of Integer type
+3) Server can take up only one job at a time.
+4) Compute nodes will fail only during sorting task
+5) Once node is died, it will never join again.
+6) All Compute nodes are registered before submitting job
+7) Compute node checks loadThreshold just after receiving task from Server. 
+   In other words, even if load on node crosses OverLoad during execution, node doesn't transfer tasks.
 
-a compute node daemon which will take care of all the load 
-balancing and communications with the server. . You can then spawn worker threads to 
-do the actual sorting part assigned to the compute node.
 
-Draw design diagram
+Terminalogy:
+------------
+Job: Client submits the job
+Task: A Job is splitted into several tasks.
+Redundant task: Task which can't be completed by node due to failure.
 
-2) Node status checker maintains a map<NodeId, last visited time>
-   if last visited time is more than 30 secs... server assumes node is dead.
 
-heart.beat.interval for every 30 secs...
-
-Flow of request - diagram
 
 Components:
 ----------
-Server:
+Server: 
+1) Schedules Map tasks, reduce tasks 
+2) Re-assign tasks if heart beat message is missing
+   NodeStatusChecker class checks for every 30 secs
 
 Compute Node:
-a) Sender initiated process migration
+-------------
+1) Registration
+2) Load check... task migration
+3) Fails based on failProbability
+4) Spawns TaskExecutor thread to execute.
+5) Each node can handles any number tasks if load permits
+6) how data is divided between nodes
+
 
 Client:
+-------
+Can query node, server for its status. submits job.
+
+Data:
+-----
+Input is given in file...
 
 Configuration:
 --------------
 
 
 
-Terminalogy:
-------------
-Job: client submits the job
-Task: A Job is splitted into tasks.
 
-
-
-Assumptions:
------------
-Data format 
-Only one job at a time
-
- 
-
-Simple test cases:
+Test cases:
 -----------------
-Sorting one value
-sorting 10 values
-duplicate values
-Empty test data
+1) Code tested against single integer, 10 values and duplicate values (Not printing any results because these are corner cases).
+2) Print node stats
+cmd: ../scripts/RunClient.sh localhost -n 3
+----
 
-Print node stats
-Print task stats
-what if all nodes are died?
-test case with probability 0 
-
-test case with probability 100
-     --> server is sending any resul(even if two compute nodes are died)
-
-Single node died
+Sample output:
+--------------
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 0
+No of transferred tasks: 0
+No of transferred requests made: 0
 
 
->> Explain about format of stats
+3) Print task stats
+
+
+4) Print server stats
+Cmd: ../scripts/RunClient.sh localhost -s
+
+Sample output:
+Server Stats :
+No of handled Jobs: 3
+No of task transfers: 0
+No of redundant tasks: 0
+No of Faults: 1
+No of Failed jobs: 0
+
+5) Tested for a case where all nodes are died
+
+6) Tested for a case where no node fails.
+
+7) Tested for a case where server re-assigns the task
+
+8) Tested for a case where node transfers the task
 
 
 

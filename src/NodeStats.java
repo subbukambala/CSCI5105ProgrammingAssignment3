@@ -27,7 +27,7 @@ public class NodeStats {
         noOfFaults = new AtomicInteger(0);
         noOfJobs = new AtomicInteger(0);
         noOfMigratedJobs = new AtomicInteger(0);
-        noOfLoadChecks =  new AtomicInteger(1);
+        noOfLoadChecks =  new AtomicInteger(0);
         noOfTransferRequests = new AtomicInteger(0);
     }
     
@@ -56,6 +56,9 @@ public class NodeStats {
     }
 
     public Double getAverageLoad() {
+        if (noOfLoadChecks.equals(0)) {
+            return totalLoad;
+        }
         return totalLoad / noOfLoadChecks.intValue();
     }
 

@@ -117,6 +117,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         if (myComputeNodesList.size() == 0) {
             lg.log(Level.SEVERE, "All computenodes are dead.");
 
+            myServerStats.getNoOfFailedJobs().incrementAndGet();
             client.jobResponse(null, null);
             
             // clearing job data 
@@ -147,6 +148,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
                             myMaps.get(i).setNode(myComputeNodesList.get(j));
                             
+                            myServerStats.getNoOfRedundantTasks().incrementAndGet();
                             isAssigned = true;
                             // Assigning ith task to J node
                             computeNode.executeTask(myMaps.get(i));
@@ -169,6 +171,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 if (! isAssigned) {
                     clearJobData();
                     
+                    myServerStats.getNoOfFailedJobs().incrementAndGet();
                     client.jobResponse(null, null);
                 
                     lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
@@ -280,6 +283,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
 
         if (myComputeNodesList.size() == 0) {
+            myServerStats.getNoOfFailedJobs().incrementAndGet();
             client.jobResponse(null, null);
             return false;
         }
@@ -371,6 +375,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             if (isAssigned == false) {
                 clearJobData();
                 
+                myServerStats.getNoOfFailedJobs().incrementAndGet();
                 client.jobResponse(null, null);
             
                 lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
@@ -436,6 +441,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             // Couldn't be able to assign a reduce task
             if (! isAssigned) {
                 clearJobData();
+                myServerStats.getNoOfFailedJobs().incrementAndGet();
+                
                 client.jobResponse(null, null);
                 return false;
             }

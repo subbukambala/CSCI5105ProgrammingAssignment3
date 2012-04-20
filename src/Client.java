@@ -207,16 +207,21 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             System.exit(1);
         }
         
+        int count = 0;
+        
         if (commandLine.hasOption('n')) {
             nodeStatsSwitch = true;
+            count++;
         }
 
         if (commandLine.hasOption('s')) {
             serverStatsSwitch = true;
+            count++;
         }
 
         String filepath = null;
         if (commandLine.hasOption('f')) {
+            count++;
             fileSwitch = true;
             filepath = commandLine.getOptionValue('f');
             if (filepath == null) {
@@ -229,13 +234,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         // TODO: If these flags are no longer mutually exclusive this
         // code should be adjusted to account for whatever constraint are
         // needed.
-        if (
-            !((serverStatsSwitch ^ fileSwitch) 
-            && (nodeStatsSwitch ^ fileSwitch))
-           ) {
+        if (count > 1) {
                 cli.usage("-n -s -f switches are mutually exclusive!\n");
                 //System.exit(1);
-            }
+        }
 
 
         Client client = null;

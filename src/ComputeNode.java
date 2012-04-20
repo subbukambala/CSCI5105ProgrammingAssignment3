@@ -75,8 +75,6 @@ public class ComputeNode extends UnicastRemoteObject
         server = (ServerInterface) Naming.lookup("//" + servername 
                                                  + "/Server");
 
-        myNodeStats = new NodeStats();
-
         id = server.registerNode();
         
         lg = new Logger("Compute Node:" + id);
@@ -154,6 +152,9 @@ public class ComputeNode extends UnicastRemoteObject
             e.printStackTrace();
             System.exit(1);
         }
+        
+        myNodeStats = new NodeStats();
+        myNodeStats.setCurrentLoad(getCurrentLoad());
     }
 
     public Integer getID() {
@@ -412,17 +413,17 @@ public class ComputeNode extends UnicastRemoteObject
         if(loadConstant!=null) {
             currLoad = loadConstant;
         }
-        else if(loadGaussian!=null)  {
-            currLoad = RandomGaussian.getGaussian
-            (
-                    loadGaussian.fst()
-                    ,loadGaussian.snd()
-                    );
-            
-        }
-        else  {
-            
-            currLoad = 0.0;        
+        else {
+            if (loadGaussian != null) {
+                currLoad = RandomGaussian.getGaussian
+                        (
+                                loadGaussian.fst()
+                                , loadGaussian.snd()
+                        );
+
+            } else {
+                currLoad = 0.0;
+            }
         }
         
         myNodeStats.setCurrentLoad(currLoad);
