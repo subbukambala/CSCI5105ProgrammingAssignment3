@@ -22,7 +22,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Exception;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
@@ -163,62 +166,6 @@ public class ComputeNode extends UnicastRemoteObject
     
     @Override
     public void executeTask(Task task) throws RemoteException {
-       
-        Double load = getCurrentLoad();
-        
-        // If load is over the threshold
-        if (load > overLoadThreshold) {
-            
-            // Get active nodes
-            List<Pair<Integer, String>> computeNodes = server.getActiveNodes();
-            
-            // Ask each node whether it can takes your load?
-            for (Integer i = 0; i < computeNodes.size(); i++) {
-                if (computeNodes.get(i).fst() != id) {
-                    ComputeNodeInterface c;
-                    String url =  "//" + computeNodes.get(i).snd() 
-                        + "/ComputeNode" + computeNodes.get(i).fst();
-                    try {
-                        c = (ComputeNodeInterface) Naming.lookup(url);
-
-                        lg.log(Level.FINEST, "Requesting node " + computeNodes.get(i).fst() +
-                                " for task transfer");
-                        
-                        myNodeStats.noOfTransferRequests.incrementAndGet();
-                        
-                        // Requesting node to take up the task 
-                        Boolean isAccepted = c.taskTransferRequest(task);
-                        
-                        // If transfer request is accepted, update server
-                        if (isAccepted) {
-                            lg.log(Level.INFO, "Node " + computeNodes.get(i).fst() +
-                            " accepted the task transfer request");
-                    
-                            myNodeStats.getNoOfMigratedJobs().incrementAndGet();
-                            task.setNode(computeNodes.get(i));
-                            
-                            // Updating task information at server
-                            server.updateTaskTransfer(task);
-                            
-                            // Executing task
-                            c.executeTask(task);
-                            return;
-                        }
-                    } catch (ConnectException e) {
-                        lg.log(Level.SEVERE, "Node with  "
-                           + "with url = "+ url + "is not responding");
-                           
-                    } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (NotBoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    
         //
         // If node couldn't transfer or load is less than overLoadThreshold, 
         // spawns worker thread.
@@ -238,7 +185,7 @@ public class ComputeNode extends UnicastRemoteObject
                 // probability or not executing sort task or
                 //
                 if (! isExecutingSortTask || getProbability() > failProbability) {
-                    lg.log(Level.INFO, " HeartBeatHandler.run: Alive.");
+                    lg.log(Level.FINEST, " HeartBeatHandler.run: Alive.");
 
                     server.heartBeatMsg(id);
                 }
@@ -263,6 +210,61 @@ public class ComputeNode extends UnicastRemoteObject
         }
         
         public void run() {
+            try {
+                Double load = getCurrentLoad();
+
+                // If load is over the threshold
+                if (load > overLoadThreshold) {
+
+                    // Get active nodes
+                    List<Pair<Integer, String>> computeNodes = server.getActiveNodes();
+
+                    // Ask each node whether it can takes your load?
+                    for (Integer i = 0; i < computeNodes.size(); i++) {
+                        if (computeNodes.get(i).fst() != id) {
+                            ComputeNodeInterface c;
+                            String url = "//" + computeNodes.get(i).snd()
+                                    + "/ComputeNode" + computeNodes.get(i).fst();
+                            try {
+                                c = (ComputeNodeInterface) Naming.lookup(url);
+
+                                lg.log(Level.FINEST, "Requesting node " + computeNodes.get(i).fst()
+                                        +
+                                        " for task transfer");
+
+                                myNodeStats.noOfTransferRequests.incrementAndGet();
+
+                                // Requesting node to take up the task
+                                Boolean isAccepted = c.taskTransferRequest(myTask);
+
+                                // If transfer request is accepted, update
+                                // server
+                                if (isAccepted) {
+                                    lg.log(Level.INFO, "Node " + computeNodes.get(i).fst() +
+                                            " accepted the task transfer request");
+
+                                    myNodeStats.getNoOfMigratedJobs().incrementAndGet();
+                                    return;
+                                }
+                            } catch (ConnectException e) {
+                                lg.log(Level.SEVERE, "Node with  "
+                                        + "with url = " + url + "is not responding");
+
+                            } catch (MalformedURLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch (NotBoundException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (myTask.getTaskType().equals(Task.TaskType.MAP)) {
                 sort((MapTask)myTask);
             }
@@ -277,7 +279,7 @@ public class ComputeNode extends UnicastRemoteObject
      */
     private void sort(MapTask t) {
         
-        lg.log(Level.FINEST,"sort: Enter");
+        lg.log(Level.INFO,"sort: Enter - " + t.getTaskId());
         
         t.setStartTaskTime(System.currentTimeMillis());
         
@@ -308,7 +310,7 @@ public class ComputeNode extends UnicastRemoteObject
             e.printStackTrace();
             System.exit(1);
         }
-        lg.log(Level.FINEST,"sort: Exit");
+        lg.log(Level.SEVERE,"sort: Exit - " + t.getTaskId());
         
         t.setEndTaskTime(System.currentTimeMillis());
         
@@ -320,7 +322,7 @@ public class ComputeNode extends UnicastRemoteObject
      * reduce task
      */
     private void merge(ReduceTask t) {
-        lg.log(Level.FINEST,"merge: Enter");
+        lg.log(Level.INFO,"merge: Enter - " + t.getTaskId());
         List<MapTask> list = t.getData();
         List<Integer> rv = new ArrayList<Integer>();
         // TODO: Merge all the lists!
@@ -361,7 +363,7 @@ public class ComputeNode extends UnicastRemoteObject
             e.printStackTrace();
             System.exit(1);
         }
-        lg.log(Level.FINEST,"merge: Exit");
+        lg.log(Level.INFO,"merge: Exit - " + t.getTaskId());
     }
     
     /**
@@ -447,6 +449,19 @@ public class ComputeNode extends UnicastRemoteObject
         if (load + task.getExpectedLoad() > overLoadThreshold) {
             return false;
         }
+        
+        try {
+            InetAddress ownIP = InetAddress.getLocalHost();
+            String localIP = ownIP.getHostAddress();
+            task.setNode(new Pair(id, localIP));
+            
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        server.updateTaskTransfer(task);
+        Thread t = new TaskExecutor(task);
+        t.start();
         
         // spawn task request...
         return true;

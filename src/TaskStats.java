@@ -18,7 +18,7 @@ public class TaskStats implements Serializable {
 
     public TaskStats() {
         noOfMapTasks = Integer.valueOf(0);
-        noOfReduceTasks = Integer.valueOf(0);
+        noOfReduceTasks = Integer.valueOf(1);
         computationTime = Long.valueOf(0);
     }
     

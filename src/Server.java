@@ -107,80 +107,90 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      * 
      * @param nodeId
      */
-    private void reassignTasks(Integer nodeId) throws Exception {
-        // Returns if there is no Map task exists.
-        if (myMaps.size() == 0) {
-            return;
-        }
-        
-        // Returns if no compute node exists to execute
-        if (myComputeNodesList.size() == 0) {
-            lg.log(Level.SEVERE, "All computenodes are dead.");
+    private void reassignTasks(Integer nodeId) {
+        try {
+            // Returns if there is no Map task exists.
+            if (myMaps.size() == 0) {
+                lg.log(Level.SEVERE, "reassignTasks: Map tasks are zero.");
+                return;
+            }
 
-            myServerStats.getNoOfFailedJobs().incrementAndGet();
-            client.jobResponse(null, null);
-            
-            // clearing job data 
-            clearJobData();
-            return;
-        }
-        
-        // A node can have many tasks
-        for (Integer i = 0; i < myMaps.size(); i++) {
-            Boolean isAssigned = false;
-            if (myMaps.get(i).getNode() == null || myMaps.get(i).getNode().fst() == nodeId) {
+            // Returns if no compute node exists to execute
+            if (myComputeNodesList.size() == 0) {
+                lg.log(Level.SEVERE, "All computenodes are dead.");
 
-                // If we have nodes in the list, loop through them ..
-                for (int j = 0; j < myComputeNodesList.size(); j++) {
-                    if (myComputeNodesList.get(j) != null
-                            && myComputeNodesList.get(j).fst() != nodeId) {
+                myServerStats.getNoOfFailedJobs().incrementAndGet();
+                client.jobResponse(null, null);
 
-                        try {
-                            String url = "";
-                            url = "//" + myComputeNodesList.get(j).snd()
-                                    + "/ComputeNode" + myComputeNodesList.get(j).fst();
+                // clearing job data
+                clearJobData();
+                return;
+            }
 
-                            ComputeNodeInterface computeNode = (ComputeNodeInterface)
-                                    Naming.lookup(url);
+            lg.log(Level.INFO, "Dead node id: " + nodeId);
 
-                            lg.log(Level.INFO, "Map task " + i + " has been re-assigned to node "
-                                    + myComputeNodesList.get(j).fst());
+            // A node can have many tasks
+            for (Integer i = 0; i < myMaps.size(); i++) {
+                Boolean isAssigned = false;
+                if (myMaps.get(i).getNode() == null || myMaps.get(i).getNode().fst().equals(nodeId)) {
 
-                            myMaps.get(i).setNode(myComputeNodesList.get(j));
-                            
-                            myServerStats.getNoOfRedundantTasks().incrementAndGet();
-                            isAssigned = true;
-                            // Assigning ith task to J node
-                            computeNode.executeTask(myMaps.get(i));
-                            break;
+                    // If we have nodes in the list, loop through them ..
+                    for (int j = 0; j < myComputeNodesList.size(); j++) {
+                        if (myComputeNodesList.get(j) != null
+                                && !myComputeNodesList.get(j).fst().equals(nodeId)) {
 
-                        } catch (MalformedURLException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (NotBoundException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            try {
+                                String url = "";
+                                url = "//" + myComputeNodesList.get(j).snd()
+                                        + "/ComputeNode" + myComputeNodesList.get(j).fst();
+
+                                ComputeNodeInterface computeNode = (ComputeNodeInterface)
+                                        Naming.lookup(url);
+
+                                lg.log(Level.INFO, "Map task " + i
+                                        + " has been re-assigned to node "
+                                        + myComputeNodesList.get(j).fst());
+
+                                myMaps.get(i).setNode(myComputeNodesList.get(j));
+
+                                myServerStats.getNoOfRedundantTasks().incrementAndGet();
+                                isAssigned = true;
+
+                                // Assigning ith task to J node
+                                computeNode.executeTask(myMaps.get(i));
+                                break;
+
+                            } catch (MalformedURLException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch (RemoteException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch (NotBoundException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
                         }
                     }
-                }
-                
-                // All nodes are died
-                if (! isAssigned) {
-                    
-                    myServerStats.getNoOfFailedJobs().incrementAndGet();
-                    client.jobResponse(null, null);
-                    clearJobData();
-                
-                    lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
-                           +"are dead. Ignoring job!");
-                    return;
-               
-                }
 
+                    // All nodes are died
+                    if (!isAssigned) {
+
+                        myServerStats.getNoOfFailedJobs().incrementAndGet();
+                        client.jobResponse(null, null);
+                        clearJobData();
+
+                        lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
+                                + "are dead. Ignoring job!");
+                        return;
+
+                    }
+
+                }
             }
+        } catch (Exception e) {
+            lg.log(Level.SEVERE, "Exception in re-assigned tasks");
+            e.printStackTrace();
         }
     }
     
@@ -204,7 +214,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         if (myMaps != null) {
             myMaps.clear();
         }
-	client = null;
+        client = null;
     }
     
     @Override
@@ -288,6 +298,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         }
 
         if (myComputeNodesList.size() == 0) {
+            lg.log(Level.SEVERE, "All nodes are dead.");
+            
             myServerStats.getNoOfFailedJobs().incrementAndGet();
             client.jobResponse(null, null);
             return false;
@@ -368,6 +380,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                     
                     myMaps.get(i).setNode(myComputeNodesList.get(k));
 
+                    lg.log(Level.INFO,"Task " + myMaps.get(i).getTaskId() + 
+                           " is being executed on " + myComputeNodesList.get(k).fst()); 
+                    
                     // Exectuing task
                     computeNode.executeTask(myMaps.get(i));
                     isAssigned = true;
@@ -406,8 +421,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     // XXX: Does not handle duplicate task aggregations
     // XXX: Does not handle errant tasks
     synchronized public Boolean aggregateMapTasks(MapTask t) throws RemoteException {
+        try {
         lg.log(Level.FINEST, "aggregateMapTasks: Enter");
-        lg.log(Level.FINER,"aggregateMapTasks: Have "
+        lg.log(Level.INFO,"aggregateMapTasks: Have "
                + myReduce.getData().size() +" MapTasks, waiting for "
                + myMaps.size() + " (going to add "  + t.getTaskId() + " + done by " + t.getNode().fst() + ")");
         
@@ -450,6 +466,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             }
             // Couldn't be able to assign a reduce task
             if (! isAssigned) {
+                lg.log(Level.SEVERE, "All nodes are dead.");
                 myServerStats.getNoOfFailedJobs().incrementAndGet();
                 
                 client.jobResponse(null, null);
@@ -457,10 +474,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 return false;
             }
             
-            lg.log(Level.FINEST, "aggregateMapTasks: Merge sent to "+url);
+            lg.log(Level.INFO, "aggregateMapTasks: Merge sent to "+url);
         }
         lg.log(Level.FINEST, "aggregateMapTasks: Exit");    
-        
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -468,7 +487,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     // XXX: Does not handle errant tasks
     public Boolean aggregateReduceTasks(ReduceTask t) throws RemoteException {
 
-        lg.log(Level.FINEST, "aggregateReduceTasks: Enter");
+        lg.log(Level.INFO, "aggregateReduceTasks: Enter");
         if(myMaps.size() != 0) {
             lg.log(Level.SEVERE,"aggregateReduceTasks: myMaps is non-empty!.");
             //System.exit(1);
@@ -486,7 +505,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         
         clearJobData();
         
-        lg.log(Level.FINEST, "aggregateReduceTasks: Exit");
+        lg.log(Level.INFO, "aggregateReduceTasks: Exit");
 
         return true;
     }
@@ -499,7 +518,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         buf.append("\nNo of task transfers: " + myServerStats.getNoOfTaskMigrations());
         buf.append("\nNo of redundant tasks: " + myServerStats.getNoOfRedundantTasks());
         buf.append("\nNo of Faults: " + myServerStats.getNoOfFaults());
-        buf.append("\nNo of Failed jobs: " + myServerStats.getNoOfFailedJobs());
+        buf.append("\nNo etof Failed jobs: " + myServerStats.getNoOfFailedJobs());
         
         return buf.toString();
     }
@@ -512,8 +531,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         myServerStats.getNoOfTaskMigrations().incrementAndGet();
         
         for (Integer i = 0; i < myMaps.size(); i++) {
-            if(myMaps.get(i).getTaskId() == task.getTaskId()) {
+            if(myMaps.get(i).getTaskId().equals(task.getTaskId())) {
                 myMaps.get(i).setNode(((MapTask)task).getNode());
+                
+                break;
             }
         }
     }
