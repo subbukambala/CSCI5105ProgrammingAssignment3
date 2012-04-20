@@ -22,4 +22,6 @@ public class ReduceTask extends Task<List<MapTask>> {
     public List<MapTask> getData() {
         return data;
     }
+
+    public Double getExpectedLoad() { return 0.0;}
 }

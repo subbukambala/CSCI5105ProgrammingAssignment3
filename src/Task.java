@@ -15,8 +15,6 @@ public abstract class Task<T> implements Serializable {
     
     public enum TaskType {MAP, REDUCE};
 
-    private Double expectedLoad;
-    
     private Long startTaskTime;    
     private Long endTaskTime;
 
@@ -48,13 +46,7 @@ public abstract class Task<T> implements Serializable {
         this.taskId = taskId;
     }
 
-    public Double getExpectedLoad() {
-        return expectedLoad;
-    }
-
-    public void setExpectedLoad(Double expectedLoad) {
-        this.expectedLoad = expectedLoad;
-    }
+    public abstract Double getExpectedLoad();    
 
     public Pair<Integer, String>  getNode() {
         return node;

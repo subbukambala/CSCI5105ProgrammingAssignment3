@@ -286,7 +286,7 @@ public class ComputeNode extends UnicastRemoteObject
         
         myNodeStats.getNoOfJobs().incrementAndGet();
         try {
-            Thread.sleep(30 * 1000);
+            Thread.sleep(2 * 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -577,7 +577,7 @@ public class ComputeNode extends UnicastRemoteObject
             // Scheduling heart beat message handler
             Timer t = new Timer();
             HeartBeatHandler h = node.new HeartBeatHandler();
-            t.schedule(h, 0, 3 * 1000);
+            t.schedule(h, 0, 1 * 1000);
 
         } catch (ConnectException ce) {
             lg.log(Level.SEVERE, "Server is not alive");

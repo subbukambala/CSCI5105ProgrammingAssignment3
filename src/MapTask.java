@@ -23,14 +23,7 @@ public class MapTask extends Task<List<Integer>> {
         return data;
     }
     
-    public void setExpectedLoad(Double expectedLoad) {
-        if (data != null) {
-            if (data.size() < 100) {
-                expectedLoad = 10d;
-            }
-            else {
-                expectedLoad  = (double)((data.size() / 100) % 100); 
-            }
-        }
+    public Double getExpectedLoad() {
+        return new Double(((data.size() / 100) % 100)); 
     }
 }

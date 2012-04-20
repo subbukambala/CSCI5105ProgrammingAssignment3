@@ -49,15 +49,24 @@ OUTPREFIX=${rfiledir}/../results/${FLAGS_prefix}
 ${rfiledir}/RunServer.sh &> ${OUTPREFIX}_server.txt &
 serverpid=$!
 
-
-echo "** Allows three seconds for server startup **";
-sleep 3;
+upP=`grep "Server started." ${OUTPREFIX}_server.txt`
+while [[ -z ${upP} ]];
+do
+    sleep 1;
+    upP=`grep "Server started." ${OUTPREFIX}_server.txt`
+done;
 
 cnodepids=
 for (( i=0; i<FLAGS_computenodes; i++ ));
 do
     ${rfiledir}/RunComputeNode.sh ${args[i]} &> ${OUTPREFIX}_cnode_${i}.txt &
     cnodepids[i]=$!;
+    upP=`grep "ComputeNode [0-9]* started." ${OUTPREFIX}_cnode_${i}.txt`
+    while [[ -z ${upP} ]];
+    do
+        sleep 1;
+        upP=`grep "Server started." ${OUTPREFIX}_server.txt`
+    done;
 done
 
 
@@ -69,15 +78,6 @@ do
 done
 
 cat ${OUTPREFIX}_input.txt | sort -n > ${OUTPREFIX}_rubric.txt
-
-
-echo "** Countdown until client blast off ... **"
-for (( i=0 ; i<10 ; i++ ));
-do
-    echo "**       $((10-$i)) **";
-    sleep 1;
-done
-echo "** ... countdown, initiating client! **"
 
 
 ${rfiledir}/RunClient.sh localhost -f ${OUTPREFIX}_input.txt &> ${OUTPREFIX}_client.txt
