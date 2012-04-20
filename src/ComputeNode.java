@@ -222,7 +222,7 @@ public class ComputeNode extends UnicastRemoteObject
             lg.log(Level.FINEST, " HeartBeatHandler.run: Enter");
 
             try {
-                if (! isExecutingSortTask || getProbability() > failProbability) {
+                if (! isExecutingSortTask || getProbability() < failProbability) {
                     lg.log(Level.INFO, " HeartBeatHandler.run: Alive.");
 
                     server.heartBeatMsg(id);
