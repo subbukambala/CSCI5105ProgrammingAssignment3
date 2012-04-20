@@ -169,10 +169,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 
                 // All nodes are died
                 if (! isAssigned) {
-                    clearJobData();
                     
                     myServerStats.getNoOfFailedJobs().incrementAndGet();
                     client.jobResponse(null, null);
+                    clearJobData();
                 
                     lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
                            +"are dead. Ignoring job!");
@@ -204,6 +204,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         if (myMaps != null) {
             myMaps.clear();
         }
+	client = null;
     }
     
     @Override
@@ -218,6 +219,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private class NodeStatusChecker extends TimerTask {
         public void run() {
             try {
+	        if(client != null && myComputeNodesList.size()==0) {
+			lg.log(Level.SEVERE, "NodeStatusChecker: All nodes  "
+			       +"dead returning null.");
+			client.jobResponse(null,null);
+			clearJobData();
+			
+		}
                 for (Integer i = 0; i < myComputeNodesList.size(); i++) {
                     if (myComputeNodesList.get(i) != null) {
 
@@ -230,7 +238,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         // If difference is greater than 30 secs or node it didn't register 
                         // its heart beat at all, then release node
                         //
-                        if (diff > 30 * 1000
+                        if (diff > 4 * 1000
                                 || heartBeatStatus.get(myComputeNodesList.get(i).fst()) == null) {
                             Integer nodeId = myComputeNodesList.get(i).fst();
 
@@ -247,6 +255,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                     }
 
                 }
+	       
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -278,15 +287,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             return false;
         }
 
-        String url = "//" + getClientHost() + "/Client";
-        client = (ClientInterface) Naming.lookup(url);
-
-
         if (myComputeNodesList.size() == 0) {
             myServerStats.getNoOfFailedJobs().incrementAndGet();
             client.jobResponse(null, null);
             return false;
         }
+
+        String url = "//" + getClientHost() + "/Client";
+        client = (ClientInterface) Naming.lookup(url);
+
+
             
         Iterator<Integer> iterator = data.iterator();
         while (iterator.hasNext()) {
@@ -373,10 +383,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             
             // All nodes are died
             if (isAssigned == false) {
-                clearJobData();
                 
                 myServerStats.getNoOfFailedJobs().incrementAndGet();
                 client.jobResponse(null, null);
+                clearJobData();
             
                 lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
                        +"are dead. Ignoring job!");
@@ -440,10 +450,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             }
             // Couldn't be able to assign a reduce task
             if (! isAssigned) {
-                clearJobData();
                 myServerStats.getNoOfFailedJobs().incrementAndGet();
                 
                 client.jobResponse(null, null);
+                clearJobData();
                 return false;
             }
             

@@ -561,6 +561,7 @@ public class ComputeNode extends UnicastRemoteObject
         
         if (commandLine.getArgs().length != 0)
             fileservername = commandLine.getArgs()[0];
+	    System.out.println(argv);
         try {
             ComputeNode node = 
                 new ComputeNode(fileservername
@@ -580,11 +581,11 @@ public class ComputeNode extends UnicastRemoteObject
             t.schedule(h, 0, 1 * 1000);
 
         } catch (ConnectException ce) {
-            lg.log(Level.SEVERE, "Server is not alive");
+            //lg.log(Level.SEVERE, "Server is not alive");
             ce.printStackTrace();
         }
         catch (Exception e) {
-            lg.log(Level.SEVERE, "Exception in file server");
+            //lg.log(Level.SEVERE, "Exception in file server");
             e.printStackTrace();
         }
     }

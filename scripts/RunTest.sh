@@ -12,6 +12,8 @@ DEFINE_integer 'numints' ${NUMBERS} "Specify the number of integers to sort (Def
 PREFIX=
 DEFINE_string 'prefix' "${PREFIX}" "Specify the prefix to use for output files (Default is '${PREFIX}')" 'p'
 
+DEFINE_boolean 'generate' false "Generate new random numbers (defaults to use ../results/unsorted.txt)" 'g'
+
 read -r -d '' FLAGS_HELP <<EOF
 USAGE: $0 [flags] compute_node_args
 
@@ -35,6 +37,11 @@ do
     i=$((i+1))
 done 
 
+if [[ "${FLAGS_generate}" == "${FLAGS_FALSE}" ]];
+then
+    echo "** Not generating random numbers ignoring -c option! **"
+fi
+
 echo "** Test Started **"
 echo "** Compute nodes = ${FLAGS_computenodes} **"
 echo "** Test size     = ${FLAGS_numints} **"
@@ -45,6 +52,7 @@ do
 done
 
 OUTPREFIX=${rfiledir}/../results/${FLAGS_prefix}
+rm -f ${OUTPREFIX}*
 
 ${rfiledir}/RunServer.sh &> ${OUTPREFIX}_server.txt &
 serverpid=$!
@@ -61,26 +69,36 @@ for (( i=0; i<FLAGS_computenodes; i++ ));
 do
     ${rfiledir}/RunComputeNode.sh ${args[i]} &> ${OUTPREFIX}_cnode_${i}.txt &
     cnodepids[i]=$!;
-    upP=`grep "ComputeNode [0-9]* started." ${OUTPREFIX}_cnode_${i}.txt`
+    upP=`grep "started." ${OUTPREFIX}_cnode_${i}.txt`
     while [[ -z ${upP} ]];
     do
         sleep 1;
-        upP=`grep "Server started." ${OUTPREFIX}_server.txt`
+        upP=`grep "started." ${OUTPREFIX}_server.txt`
     done;
 done
 
 
-rm ${OUTPREFIX}_input.txt
-for (( i=0 ; i<FLAGS_numints; i++ ));
-do
-    num=$RANDOM
-    echo $RANDOM >> ${OUTPREFIX}_input.txt 
-done
-
-cat ${OUTPREFIX}_input.txt | sort -n > ${OUTPREFIX}_rubric.txt
+unsorted="${rfiledir}/../results/unsorted.dat"
+sorted="${rfiledir}/../results/sorted.dat"
 
 
-${rfiledir}/RunClient.sh localhost -f ${OUTPREFIX}_input.txt &> ${OUTPREFIX}_client.txt
+if [[ "${FLAGS_generate}" == "${FLAGS_TRUE}" ]];
+then
+
+    echo "** Generating random numbers **"
+    rm ${OUTPREFIX}_input.txt
+    for (( i=0 ; i<FLAGS_numints; i++ ));
+    do
+        num=$RANDOM
+        echo $RANDOM >> ${OUTPREFIX}_input.txt 
+    done
+
+    sort -n ${OUTPREFIX}_rubric.txt
+    unsorted=${OUTPREFIX}_input.txt
+    sorted=${OUTPREFIX}_rubric.txt
+fi
+
+${rfiledir}/RunClient.sh localhost -f ${unsorted} &> ${OUTPREFIX}_client.txt
 cat ${OUTPREFIX}_client.txt | grep "^result" | awk '{print $3}' > ${OUTPREFIX}_response.txt
 
 
@@ -93,7 +111,7 @@ done
 kill -9 ${serverpid}
 wait ${serverpid}
 
-diff ${OUTPREFIX}_rubric.txt ${OUTPREFIX}_response.txt > ${OUTPREFIX}_diff.txt
+diff ${sorted} ${OUTPREFIX}_response.txt > ${OUTPREFIX}_diff.txt
 
 killall -9 java
 

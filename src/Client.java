@@ -45,7 +45,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         
         // If results are null, server couldn't process job
         if (_results == null) {
-            System.out.println("\nServer couldn't process job. All compute nodes are died");
+            System.out.println("\nServer couldn't process job. All compute nodes are dead");
         }
         else {
             // Printing job statistics
