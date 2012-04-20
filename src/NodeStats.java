@@ -1,7 +1,7 @@
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @description.
+ * @description Instance of this holds statistics of Node. 
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)

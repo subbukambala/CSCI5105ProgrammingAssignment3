@@ -1,5 +1,5 @@
 /**
- * @description.
+ * @description Holds meta information and data about Task
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
@@ -16,7 +16,30 @@ public abstract class Task<T> implements Serializable {
     public enum TaskType {MAP, REDUCE};
 
     private Double expectedLoad;
+    
+    private Long startTaskTime;    
+    private Long endTaskTime;
 
+    public Long getStartTaskTime() {
+        return startTaskTime;
+    }
+
+    public void setStartTaskTime(Long startTaskTime) {
+        this.startTaskTime = startTaskTime;
+    }
+
+    public Long getEndTaskTime() {
+        return endTaskTime;
+    }
+
+    public void setEndTaskTime(Long endTaskTime) {
+        this.endTaskTime = endTaskTime;
+    }
+
+    public Long getComputationTime() {
+        return endTaskTime - startTaskTime;
+    }
+    
     public Integer getTaskId() {
         return taskId;
     }
