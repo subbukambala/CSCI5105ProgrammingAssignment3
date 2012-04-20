@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ public class ComputeNode extends UnicastRemoteObject
     
     private Double heartBeatInterval;
     
-    private NodeStats nodeStats;
+    private NodeStats myNodeStats;
     
     private Boolean isExecutingSortTask = false;
     
@@ -70,6 +71,7 @@ public class ComputeNode extends UnicastRemoteObject
         server = (ServerInterface) Naming.lookup("//" + servername 
                                                  + "/Server");
 
+        myNodeStats = new NodeStats();
 
         id = server.registerNode();
         
@@ -176,6 +178,8 @@ public class ComputeNode extends UnicastRemoteObject
                         lg.log(Level.FINEST, "Requesting node " + computeNodes.get(i).fst() +
                                 " for task transfer");
                         
+                        myNodeStats.noOfTransferRequests.incrementAndGet();
+                        
                         // Requesting node to take up the task 
                         Boolean isAccepted = c.taskTransferRequest(task);
                         
@@ -184,6 +188,7 @@ public class ComputeNode extends UnicastRemoteObject
                             lg.log(Level.INFO, "Node " + computeNodes.get(i).fst() +
                             " accepted the task transfer request");
                     
+                            myNodeStats.getNoOfMigratedJobs().incrementAndGet();
                             task.setNode(computeNodes.get(i));
                             server.updateTaskTransfer(task);
                             return;
@@ -260,9 +265,9 @@ public class ComputeNode extends UnicastRemoteObject
         lg.log(Level.FINEST,"sort: Enter");
         // This is to make sure compute node fails only during sorting.
         isExecutingSortTask = true;
-        
+        myNodeStats.getNoOfJobs().incrementAndGet();
         try {
-            Thread.sleep(30 * 1000);
+            //Thread.sleep(30 * 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -275,7 +280,7 @@ public class ComputeNode extends UnicastRemoteObject
         try {
             Collections.sort(t.getData());
             synchronized(t) {
-                t.wait(10*t.getData().size());
+                t.wait(10 * t.getData().size());
             }
             server.aggregateMapTasks(t);
         }
@@ -385,8 +390,7 @@ public class ComputeNode extends UnicastRemoteObject
                    
         }
         if(loadConstant!=null) {
-            lg.log(Level.FINER, " getCurrentLoad: Load =" + loadConstant);
-            return loadConstant;
+            currLoad = loadConstant;
         }
         else if(loadGaussian!=null)  {
             currLoad = RandomGaussian.getGaussian
@@ -394,18 +398,26 @@ public class ComputeNode extends UnicastRemoteObject
                     loadGaussian.fst()
                     ,loadGaussian.snd()
                     );
-            return currLoad;
+            
         }
         else  {
-            lg.log(Level.FINER, " getCurrentLoad: Load =0.0");
-            return 0.0;        
+            
+            currLoad = 0.0;        
         }
+        
+        myNodeStats.setCurrentLoad(currLoad);
+        myNodeStats.noOfLoadChecks.incrementAndGet();
+        myNodeStats.setTotalLoad(myNodeStats.getTotalLoad() + currLoad);
+        
+        lg.log(Level.FINER, " getCurrentLoad: Load " + currLoad);
+        return currLoad;
     }
     
     @Override
     public Boolean taskTransferRequest(Task task) throws RemoteException {
         
         Double load =  getCurrentLoad();
+        myNodeStats.getNoOfTransferRequests().incrementAndGet();
         
         lg.log(Level.FINER, "currLoad :" + load + " expectedLoad: " + 
                 task.getExpectedLoad() + " overLoadThreshold :" + overLoadThreshold);
@@ -421,7 +433,14 @@ public class ComputeNode extends UnicastRemoteObject
     
     @Override
     public String getNodeStats() throws RemoteException {
-        return "";
+        StringBuffer buf = new StringBuffer();
+        buf.append("Current load: " + myNodeStats.getCurrentLoad());
+        buf.append("\nAverage load: " + myNodeStats.getAverageLoad());
+        buf.append("\nNo of completed tasks: " + myNodeStats.getNoOfJobs());
+        buf.append("\nNo of transferred tasks: " + myNodeStats.getNoOfMigratedJobs());
+        buf.append("\nNo of transferred requests made: " + myNodeStats.getNoOfTransferRequests());
+        
+        return buf.toString();
     }
     
     public static void main(String[] argv) {

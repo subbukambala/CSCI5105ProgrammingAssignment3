@@ -5,6 +5,7 @@
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -142,51 +143,59 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             return;
         }
         
+        // A node can have many tasks
         for (Integer i = 0; i < myMaps.size(); i++) {
+            Boolean isAssigned = false;
             if (myMaps.get(i).getNode() == null || myMaps.get(i).getNode().fst() == nodeId) {
-                int j = 0;
+
                 // If we have nodes in the list, loop through them ..
-                for (; j<myComputeNodesList.size(); j++)
-                    if(myComputeNodesList.get(j) != null 
-                       && myComputeNodesList.get(j).fst() != nodeId) 
-                        break;
+                for (int j = 0; j < myComputeNodesList.size(); j++) {
+                    if (myComputeNodesList.get(j) != null
+                            && myComputeNodesList.get(j).fst() != nodeId) {
+
+                        try {
+                            String url = "";
+                            url = "//" + myComputeNodesList.get(j).snd()
+                                    + "/ComputeNode" + myComputeNodesList.get(j).fst();
+
+                            ComputeNodeInterface computeNode = (ComputeNodeInterface)
+                                    Naming.lookup(url);
+
+                            lg.log(Level.INFO, "Map Task " + i + "has been re-assigned to node "
+                                    + myComputeNodesList.get(j).fst());
+
+                            myMaps.get(i).setNode(myComputeNodesList.get(j));
+                            
+                            isAssigned = true;
+                            // Assigning ith task to J node
+                            computeNode.executeTask(myMaps.get(i));
+                            break;
+
+                        } catch (MalformedURLException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (RemoteException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (NotBoundException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 
-                // If all compute nodes are died.
-                if (myComputeNodesList.size()==0 
-                    || j == myComputeNodesList.size()) {
-                    System.out.println("All compute nodes are dead (j="+j
-                                       +" and node size is "
-                                       +myComputeNodesList.size()+")");
-                    
-                    client.jobResponse(null, null);
-                    
-                    // clearing job data 
+                // All nodes are died
+                if (! isAssigned) {
                     clearJobData();
                     
+                    client.jobResponse(null, null);
+                
+                    lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
+                           +"are dead. Ignoring job!");
                     return;
+               
                 }
-                
-                try {
-                    ComputeNodeInterface computeNode = (ComputeNodeInterface) 
-                                Naming.lookup("//" + myComputeNodesList.get(j).snd() 
-                                        + "/ComputeNode" + myComputeNodesList.get(j).fst());
-                    
-                    lg.log(Level.INFO, "Map Task has been re-assigned to node " + myComputeNodesList.get(j).fst());
-                    
-                    // Assigning ith task to J node
-                    computeNode.executeTask(myMaps.get(i));
 
-                } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (NotBoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
             }
         }
     }
@@ -226,36 +235,33 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         public void run() {
             try {
                 for (Integer i = 0; i < myComputeNodesList.size(); i++) {
-                    if (myComputeNodesList.get(i) != null && heartBeatStatus.get(myComputeNodesList.get(i).fst()) != null) {
-                        Long diff = 
-                            System.currentTimeMillis()
-                            - heartBeatStatus.get(myComputeNodesList.get(i).fst());
-                        if (diff > 30 * 1000) {
+                    if (myComputeNodesList.get(i) != null) {
+
+                        Long diff = 0l;
+                        if (heartBeatStatus.get(myComputeNodesList.get(i).fst()) != null) {
+                            diff = System.currentTimeMillis()
+                                            - heartBeatStatus.get(myComputeNodesList.get(i).fst());
+                        }
+                        //
+                        // If difference is greater than 30 secs or node it didn't register 
+                        // its heart beat at all, then release node
+                        //
+                        if (diff > 30 * 1000
+                                || heartBeatStatus.get(myComputeNodesList.get(i).fst()) == null) {
                             Integer nodeId = myComputeNodesList.get(i).fst();
-                            
+
                             // Incrementing no of faults
                             myServerStats.getNoOfFaults().incrementAndGet();
-                            
+
                             reassignTasks(nodeId);
-                            
+
                             releaseNode(myComputeNodesList.get(i));
-                            
+
                             // Deleted current and Size is reduced by 1
                             i--;
                         }
                     }
-                    else {
-                        if (myComputeNodesList.get(i) != null && heartBeatStatus.get(myComputeNodesList.get(i).fst()) == null) {
-                            // Incrementing no of faults
-                            myServerStats.getNoOfFaults().incrementAndGet();
-                            
-                            reassignTasks(myComputeNodesList.get(i).fst());
-                            
-                            releaseNode(myComputeNodesList.get(i));
-                            // Deleted current and Size is reduced by 1
-                            i--;
-                        }
-                    }
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -361,27 +367,32 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         + myComputeNodesList.get(k).fst();
                     ComputeNodeInterface computeNode = (ComputeNodeInterface) 
                         Naming.lookup(url);
+                    
+                    myMaps.get(i).setNode(myComputeNodesList.get(k));
+                    
                     computeNode.executeTask(myMaps.get(i));
                     isAssigned = true;
                     break;
-                } catch (Exception e) {
+                } catch (java.rmi.ConnectException e) {
                     lg.log(Level.SEVERE,"submitJob(list): failure on "
-                           +"executeTask with url = "+ url);
-                }
-
-            // All nodes are died
-                if (isAssigned == false) {
-                    clearJobData();
-                    
-                    client.jobResponse(null, null);
-                
-                    lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
-                           +"are dead. Ignoring job!");
-                    return false;
-               
+                           +"executeTask with url = "+ url + 
+                           "\n\n Exception is" + e.getStackTrace());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             
+            // All nodes are died
+            if (isAssigned == false) {
+                clearJobData();
+                
+                client.jobResponse(null, null);
+            
+                lg.log(Level.SEVERE, "submitJob(list): All compute nodes "
+                       +"are dead. Ignoring job!");
+                return false;
+           
+            }
 
         }
         lg.log(Level.FINEST, "submitJob(list): Exit");        
@@ -398,7 +409,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "aggregateMapTasks: Enter");
         lg.log(Level.FINER,"aggregateMapTasks: Have "
                + myReduce.getData().size() +" MapTasks, waiting for "
-               + myMaps.size());
+               + myMaps.size() + " (going to add "  + t.getTaskId() + " + done by " + t.getNode().fst() + ")");
         
         myReduce.getData().add(t);
         // If I have received all the maps then 

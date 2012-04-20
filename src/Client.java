@@ -12,6 +12,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.logging.Level;
@@ -91,14 +92,38 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     /**
-     *
+     * Returns Node stats
      */
-    private void getNodeStats() {
+    private static void getNodeStats(Integer nodeId) {
+        String url = "";
+        try {
+            url = "//localhost/ComputeNode" + nodeId;
+
+            ComputeNodeInterface computeNode = (ComputeNodeInterface) Naming
+                    .lookup(url);
+
+            String stats = computeNode.getNodeStats();
+
+            lg.log(Level.INFO, "\n Node Stats :\n" + stats);
+
+        } catch (ConnectException ce) {
+            lg.log(Level.SEVERE, "Unable to connect to node using url:" + url + "\n\n"
+                    + "Exception is : " + ce.getStackTrace());
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        } catch (RemoteException re) {
+            re.printStackTrace();
+        }
 
     }
 
     /**
-     *
+     * Returns server stats
      */
     private static void getServerStats() {
         try {
@@ -161,11 +186,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             cli.usage("Server address required!\n\n");
             System.exit(1);
         }
-
+        
         if (commandLine.hasOption('n')) {
             nodeStatsSwitch = true;
-            cli.usage("Unimplemented option!\n\n");
-            System.exit(1);
         }
 
         if (commandLine.hasOption('s')) {
@@ -212,6 +235,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             else {
                 if (serverStatsSwitch) {
                     getServerStats();
+                }
+                if (nodeStatsSwitch) {
+                    Integer nodeId = Integer.parseInt(commandLine.getOptionValue('n'));
+                    getNodeStats(nodeId);
                 }
             }
             
