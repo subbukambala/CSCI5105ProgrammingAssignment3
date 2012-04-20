@@ -238,7 +238,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         // If difference is greater than 30 secs or node it didn't register 
                         // its heart beat at all, then release node
                         //
-                        if (diff > 4 * 1000
+                        if (diff > 10 * 1000
                                 || heartBeatStatus.get(myComputeNodesList.get(i).fst()) == null) {
                             Integer nodeId = myComputeNodesList.get(i).fst();
 
@@ -550,7 +550,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             Timer t = new Timer();
             NodeStatusChecker h = server.new NodeStatusChecker();
             
-            t.schedule(h, 0, 30 * 1000);
+            t.schedule(h, 0, 10 * 1000);
             
         } catch (Exception e) {
             System.out.println("Server failed: ");
