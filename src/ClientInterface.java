@@ -1,5 +1,5 @@
 /**
- * @descriptrion Remote Interface for a client. To simplify the logic, in 
+ * @description Remote Interface for a client. To simplify the logic, in 
  * order to communicate with client asynchronously, implementing RMI 
  * interface to client.
  * 
@@ -14,6 +14,9 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
 
+    /**
+     * This method is called by Server to send response to client.
+     */
     public void jobResponse(TaskStats stats,List<Integer> results) 
         throws RemoteException;
 }

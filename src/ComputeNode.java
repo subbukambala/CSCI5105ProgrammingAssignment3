@@ -1,5 +1,5 @@
 /**
- * @description Implements the FileServer interface
+ * @description Implements the Compute node interface
  * 
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
@@ -44,21 +44,25 @@ public class ComputeNode extends UnicastRemoteObject
     
     private Double failProbability;
 
+    /**
+     * Used to specify constant load.
+     */
     private Double loadConstant;
     
+    /**
+     * Used in generating random values with gaussian distribution.
+     */
     private Pair<Double,Double> loadGaussian;
     
-    private Double heartBeatInterval;
-    
+    /**
+     * Stores node stats
+     */
     private NodeStats myNodeStats;
     
-    private Boolean isExecutingSortTask = false;
-    
-    
     /**
-     * Used in simulating load
+     * Used in terminating the node only during sorting task
      */
-    private static int tasksCount;
+    private Boolean isExecutingSortTask = false;
     
     public ComputeNode(String servername
                        ,Double _underLoadThreshold
@@ -160,7 +164,8 @@ public class ComputeNode extends UnicastRemoteObject
     public void executeTask(Task task) throws RemoteException {
        
         Double load = getCurrentLoad();
-        // If load is over the treshold
+        
+        // If load is over the threshold
         if (load > overLoadThreshold) {
             
             // Get active nodes
@@ -190,7 +195,12 @@ public class ComputeNode extends UnicastRemoteObject
                     
                             myNodeStats.getNoOfMigratedJobs().incrementAndGet();
                             task.setNode(computeNodes.get(i));
+                            
+                            // Updating task information at server
                             server.updateTaskTransfer(task);
+                            
+                            // Executing task
+                            c.executeTask(task);
                             return;
                         }
                     } catch (ConnectException e) {
@@ -222,7 +232,11 @@ public class ComputeNode extends UnicastRemoteObject
             lg.log(Level.FINEST, " HeartBeatHandler.run: Enter");
 
             try {
-                if (! isExecutingSortTask || getProbability() < failProbability) {
+                //
+                // Sends heartbeat message if probability is greater than fail 
+                // probability or not executing sort task or
+                //
+                if (! isExecutingSortTask || getProbability() > failProbability) {
                     lg.log(Level.INFO, " HeartBeatHandler.run: Alive.");
 
                     server.heartBeatMsg(id);
@@ -263,11 +277,15 @@ public class ComputeNode extends UnicastRemoteObject
     private void sort(MapTask t) {
         
         lg.log(Level.FINEST,"sort: Enter");
+        
+        t.setStartTaskTime(System.currentTimeMillis());
+        
         // This is to make sure compute node fails only during sorting.
         isExecutingSortTask = true;
+        
         myNodeStats.getNoOfJobs().incrementAndGet();
         try {
-            //Thread.sleep(30 * 1000);
+            Thread.sleep(30 * 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -290,6 +308,8 @@ public class ComputeNode extends UnicastRemoteObject
             System.exit(1);
         }
         lg.log(Level.FINEST,"sort: Exit");
+        
+        t.setEndTaskTime(System.currentTimeMillis());
         
         // This is to make sure compute node fails only during sorting.
         isExecutingSortTask = false;

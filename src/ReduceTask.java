@@ -1,5 +1,5 @@
 /**
- * @description.
+ * @description Instance of ReduceTask holds information needed to execute ReduceTask.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
@@ -23,4 +23,5 @@ public class ReduceTask extends Task<List<MapTask>> {
         return data;
     }
 
+    public Double getExpectedLoad() { return 0.0;}
 }

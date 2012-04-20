@@ -1,26 +1,43 @@
+import java.io.Serializable;
+
 /**
- * @description.
+ * @description Holds statistics of Task.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-public class TaskStats {
+public class TaskStats implements Serializable {
 
     private Integer noOfMapTasks;
     private Integer noOfReduceTasks;
-    private Double totalTime;
-    private Double computationTime;
-    private Double dataTransferTime;
+    private Long computationTime;
+    
+    private Long startJobTime;
+    private Long endJobTime;
 
     public TaskStats() {
         noOfMapTasks = Integer.valueOf(0);
         noOfReduceTasks = Integer.valueOf(0);
-        totalTime = Double.valueOf(0);
-        computationTime = Double.valueOf(0);
-        dataTransferTime = Double.valueOf(0);
+        computationTime = Long.valueOf(0);
     }
     
+    public Long getStartJobTime() {
+        return startJobTime;
+    }
+
+    public void setStartJobTime(Long startJobTime) {
+        this.startJobTime = startJobTime;
+    }
+
+    public Long getEndJobTime() {
+        return endJobTime;
+    }
+
+    public void setEndJobTime(Long endJobTime) {
+        this.endJobTime = endJobTime;
+    }
+
     public Integer getNoOfMapTasks() {
         return noOfMapTasks;
     }
@@ -38,26 +55,14 @@ public class TaskStats {
     }
 
     public double getTotalTime() {
-        return totalTime;
+        return endJobTime - startJobTime;
     }
 
-    public void setTotalTime(double totalTime) {
-        this.totalTime = totalTime;
-    }
-
-    public double getComputationTime() {
+    public Long getComputationTime() {
         return computationTime;
     }
 
-    public void setComputationTime(double computationTime) {
+    public void setComputationTime(Long computationTime) {
         this.computationTime = computationTime;
-    }
-
-    public double getDataTransferTime() {
-        return dataTransferTime;
-    }
-
-    public void setDataTransferTime(double dataTransferTime) {
-        this.dataTransferTime = dataTransferTime;
     }
 }

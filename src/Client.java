@@ -7,10 +7,8 @@
  */
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.*;
@@ -44,8 +42,19 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     @Override
     synchronized public void jobResponse(TaskStats stats, List<Integer> _results) throws RemoteException {
         results = _results;
+        
+        // If results are null, server couldn't process job
         if (_results == null) {
             System.out.println("\nServer couldn't process job. All compute nodes are died");
+        }
+        else {
+            // Printing job statistics
+            if (stats != null) {
+                System.out.println("********         Job Stats          *******");
+                System.out.println("No of Map tasks: " + stats.getNoOfMapTasks());
+                System.out.println("No of Reduce tasks: " + stats.getNoOfReduceTasks());
+                System.out.println("Total run time (millis): " + stats.getTotalTime());
+            }
         }
         notify();
     }
@@ -56,7 +65,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * The filename should store a file containing 0 or more integers separated
      * by newlines.
      */
-    public  void submitJob(String filename) throws Exception {
+    public void submitJob(String filename) throws Exception {
         lg.log(Level.FINEST, "File = " + filename);
         FileInputStream fstream = new FileInputStream(filename);
 
@@ -97,11 +106,20 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     private static void getNodeStats(Integer nodeId) {
         String url = "";
         try {
-            url = "//localhost/ComputeNode" + nodeId;
+            // Finding IP address using node id
+            String ipAddr = "";
+            List<Pair<Integer, String> > nodes = server.getActiveNodes();
+            for (int i = 0; i < nodes.size(); i++) {
+                if (nodes.get(i) != null && nodes.get(i).fst() == nodeId) {
+                    ipAddr = nodes.get(i).snd();
+                }
+            }
+            url = "//" + ipAddr + "/ComputeNode" + nodeId;
 
             ComputeNodeInterface computeNode = (ComputeNodeInterface) Naming
                     .lookup(url);
 
+            // Getting node stats
             String stats = computeNode.getNodeStats();
 
             lg.log(Level.INFO, "\n Node Stats :\n" + stats);
@@ -109,6 +127,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         } catch (ConnectException ce) {
             lg.log(Level.SEVERE, "Unable to connect to node using url:" + url + "\n\n"
                     + "Exception is : " + ce.getStackTrace());
+            
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -123,10 +142,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
 
     /**
-     * Returns server stats
+     * Returns server statistics
      */
     private static void getServerStats() {
         try {
+            // Getting server stats
             String stats = server.getServerStats();
             
             lg.log(Level.INFO, "\nServer Stats :\n" + stats);
@@ -220,8 +240,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
         Client client = null;
         try {
+            // Binding client
             client = new Client(server);
             Naming.rebind("Client", client);
+            
+            // If input is file
             if ( fileSwitch ) {
                 client.submitJob(filepath);
                 System.out.println("\nSorted results: ");
@@ -233,9 +256,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 }
             }
             else {
+                // get server stats
                 if (serverStatsSwitch) {
                     getServerStats();
                 }
+                
+                // get node stats
                 if (nodeStatsSwitch) {
                     Integer nodeId = Integer.parseInt(commandLine.getOptionValue('n'));
                     getNodeStats(nodeId);

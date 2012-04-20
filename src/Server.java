@@ -1,16 +1,15 @@
 /**
- * @description.
+ * @description Server accepts job from client and schedules Map/Reduce tasks on compute nodes. 
+ * If any compute node fails, this also reschedules the task of failed compute node.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
 
-import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -49,8 +48,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
      */
     private TaskStats myTaskStats;
     
+    /**
+     * List of map tasks
+     */
     private List<MapTask> myMaps;
 
+    /**
+     * Reduce Task instance
+     */
     private ReduceTask myReduce;
 
     private ClientInterface client;
@@ -97,42 +102,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return myComputeNodesList;
     }
     
-    private class TaskHandler extends Thread{
-       
-        public Integer jobId;
-        public String filePath;
-        private List<Task> tasks;
-        
-        public TaskHandler(Integer _jobId, String _filePath) {
-            jobId = _jobId;
-            filePath = _filePath;
-        }
-        
-        public void run() {
-            // calls the methods in appropriate order 'map','reduce'
-            
-        }
-        
-        private void scheduleMapJob() {
-            // can use split command to split data in terms lines.
-            // convention: file name jobid_taskid
-        }
-        
-        private void scheduleReduceJob() {
-            
-        }
-    }
-    
     /**
      * Re-assigns all the tasks of nodeId to first node in list which is not nodeId.
      * 
      * @param nodeId
      */
     private void reassignTasks(Integer nodeId) throws Exception {
+        // Returns if there is no Map task exists.
         if (myMaps.size() == 0) {
             return;
         }
         
+        // Returns if no compute node exists to execute
         if (myComputeNodesList.size() == 0) {
             lg.log(Level.SEVERE, "All computenodes are dead.");
 
@@ -277,6 +258,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Entry");
         
         myTaskStats =  new TaskStats();
+        myTaskStats.setStartJobTime(System.currentTimeMillis());
         
         // Incrementing the no of jobs
         myServerStats.getNoOfJobs().incrementAndGet();
@@ -349,6 +331,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         lg.log(Level.FINEST, "submitJob(list): Task list of size "
                 + myMaps.size() + " created.");
 
+        myTaskStats.setNoOfMapTasks(myMaps.size());
+        
         // Assigning tasks to nodes
         for (i = 0; i < myMaps.size(); i++) {
             
@@ -369,7 +353,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                         Naming.lookup(url);
                     
                     myMaps.get(i).setNode(myComputeNodesList.get(k));
-                    
+
+                    // Exectuing task
                     computeNode.executeTask(myMaps.get(i));
                     isAssigned = true;
                     break;
@@ -478,7 +463,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             sortedlist.addAll(t.getData().get(i).getData());
         }
         
-        client.jobResponse(null, sortedlist);
+        myTaskStats.setEndJobTime(System.currentTimeMillis());
+        
+        client.jobResponse(myTaskStats, sortedlist);
         
         clearJobData();
         
