@@ -161,7 +161,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                             ComputeNodeInterface computeNode = (ComputeNodeInterface)
                                     Naming.lookup(url);
 
-                            lg.log(Level.INFO, "Map Task " + i + "has been re-assigned to node "
+                            lg.log(Level.INFO, "Map task " + i + " has been re-assigned to node "
                                     + myComputeNodesList.get(j).fst());
 
                             myMaps.get(i).setNode(myComputeNodesList.get(j));
