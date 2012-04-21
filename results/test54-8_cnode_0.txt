@@ -1,0 +1,135 @@
+[Ljava.lang.String;@e0e1c6
+Apr 20, 2012 9:38:06 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 9:38:06 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 9:38:06 PM Logger log
+FINER: ComputeNode 1: under load threshhold = 0.0
+Apr 20, 2012 9:38:06 PM Logger log
+FINER: ComputeNode 1: over load threshhold = 60.0
+Apr 20, 2012 9:38:06 PM Logger log
+FINER: ComputeNode 1: fail probability = 16.0
+Apr 20, 2012 9:38:06 PM Logger log
+FINER: ComputeNode 1: load gaussian = 50.0,10.0
+Apr 20, 2012 9:38:06 PM Logger log
+FINER:  getCurrentLoad: Load 43.796318968214656
+Apr 20, 2012 9:38:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:12 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:12 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:12 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:13 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:13 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:13 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:14 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:14 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:14 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:15 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 60.06856762992125
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST: Requesting node 1 for task transfer
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 39.658664560667674
+Apr 20, 2012 9:38:16 PM Logger log
+FINER: currLoad :39.658664560667674 expectedLoad: 1.0 overLoadThreshold :60.0
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 40.630643502796
+Apr 20, 2012 9:38:16 PM Logger log
+FINER: currLoad :40.630643502796 expectedLoad: 1.0 overLoadThreshold :60.0
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 49.03772009005991
+Apr 20, 2012 9:38:16 PM Logger log
+FINER: currLoad :49.03772009005991 expectedLoad: 1.0 overLoadThreshold :60.0
+Apr 20, 2012 9:38:16 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 55.14406912362028
+Apr 20, 2012 9:38:16 PM Logger log
+FINER: currLoad :55.14406912362028 expectedLoad: 1.0 overLoadThreshold :60.0
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: Node 1 accepted the task transfer request
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: Node 1 accepted the task transfer request
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 45.49264387265008
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 1
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 1
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 56.95292269733042
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 6
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 6
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 36.83047625689232
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 5
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 5
+Apr 20, 2012 9:38:16 PM Logger log
+FINER:  getCurrentLoad: Load 44.93018162394573
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:38:16 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:38:17 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:38:17 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:38:17 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)

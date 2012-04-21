@@ -1,0 +1,108 @@
+[Ljava.lang.String;@64578ceb
+Apr 20, 2012 9:29:50 PM Logger log
+INFO: ComputeNode 2 started.
+Apr 20, 2012 9:29:50 PM Logger log
+INFO: ComputeNode 2 started.
+Apr 20, 2012 9:29:50 PM Logger log
+FINER: ComputeNode 2: under load threshhold = 0.0
+Apr 20, 2012 9:29:50 PM Logger log
+FINER: ComputeNode 2: over load threshhold = 60.0
+Apr 20, 2012 9:29:50 PM Logger log
+FINER: ComputeNode 2: fail probability = 16.0
+Apr 20, 2012 9:29:50 PM Logger log
+FINER: ComputeNode 2: load gaussian = 50.0,10.0
+Apr 20, 2012 9:29:50 PM Logger log
+FINER:  getCurrentLoad: Load 62.38384386877505
+Apr 20, 2012 9:29:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:52 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:53 PM Logger log
+FINER:  getCurrentLoad: Load 67.82315445971611
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST: Requesting node 1 for task transfer
+Apr 20, 2012 9:29:53 PM Logger log
+INFO: Node 1 accepted the task transfer request
+Apr 20, 2012 9:29:53 PM Logger log
+INFO: Node 1 accepted the task transfer request
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:29:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:29:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:29:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:30:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:30:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:30:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:30:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:30:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:30:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:30:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:30:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:30:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:30:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:30:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:30:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+./RunComputeNode.sh: line 6:  5360 Killed                  java -cp .:${fqsrcdir}/:${fqjardir}commons-cli-1.2.jar ComputeNode $*

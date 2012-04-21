@@ -1,0 +1,63 @@
+[Ljava.lang.String;@e0e1c6
+Apr 20, 2012 9:40:59 PM Logger log
+INFO: ComputeNode 6 started.
+Apr 20, 2012 9:40:59 PM Logger log
+INFO: ComputeNode 6 started.
+Apr 20, 2012 9:40:59 PM Logger log
+FINER: ComputeNode 6: under load threshhold = 0.0
+Apr 20, 2012 9:40:59 PM Logger log
+FINER: ComputeNode 6: over load threshhold = 50.0
+Apr 20, 2012 9:40:59 PM Logger log
+FINER: ComputeNode 6: fail probability = 16.0
+Apr 20, 2012 9:40:59 PM Logger log
+FINER: ComputeNode 6: load gaussian = 50.0,10.0
+Apr 20, 2012 9:41:00 PM Logger log
+FINER:  getCurrentLoad: Load 43.01115344201238
+Apr 20, 2012 9:41:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:00 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:01 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:02 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:04 PM Logger log
+FINER:  getCurrentLoad: Load 49.190019190277354
+Apr 20, 2012 9:41:04 PM Logger log
+INFO: sort: Enter - 6
+Apr 20, 2012 9:41:04 PM Logger log
+INFO: sort: Enter - 6
+Apr 20, 2012 9:41:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:41:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:41:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:41:06 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:41:06 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)

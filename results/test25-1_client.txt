@@ -1,0 +1,8 @@
+Apr 20, 2012 9:22:05 PM Logger log
+FINER: Client started.
+Apr 20, 2012 9:22:05 PM Logger log
+FINEST: File = ./../results/unsorted.dat
+
+Server couldn't process job. All compute nodes are dead
+
+Sorted results: 

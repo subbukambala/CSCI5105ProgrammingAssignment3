@@ -1,0 +1,57 @@
+[Ljava.lang.String;@e0e1c6
+Apr 20, 2012 9:39:06 PM Logger log
+INFO: ComputeNode 5 started.
+Apr 20, 2012 9:39:06 PM Logger log
+INFO: ComputeNode 5 started.
+Apr 20, 2012 9:39:06 PM Logger log
+FINER: ComputeNode 5: under load threshhold = 0.0
+Apr 20, 2012 9:39:06 PM Logger log
+FINER: ComputeNode 5: over load threshhold = 60.0
+Apr 20, 2012 9:39:06 PM Logger log
+FINER: ComputeNode 5: fail probability = 16.0
+Apr 20, 2012 9:39:06 PM Logger log
+FINER: ComputeNode 5: load gaussian = 50.0,10.0
+Apr 20, 2012 9:39:07 PM Logger log
+FINER:  getCurrentLoad: Load 41.01346121100066
+Apr 20, 2012 9:39:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:39:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:39:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:39:08 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:39:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:39:09 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:39:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:39:10 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:39:11 PM Logger log
+FINER:  getCurrentLoad: Load 48.43449361769955
+Apr 20, 2012 9:39:11 PM Logger log
+INFO: sort: Enter - 5
+Apr 20, 2012 9:39:11 PM Logger log
+INFO: sort: Enter - 5
+Apr 20, 2012 9:39:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:39:11 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:39:12 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:39:12 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:39:12 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
