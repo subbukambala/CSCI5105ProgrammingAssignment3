@@ -110,19 +110,29 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             String ipAddr = "";
             List<Pair<Integer, String> > nodes = server.getActiveNodes();
             for (int i = 0; i < nodes.size(); i++) {
-                if (nodes.get(i) != null && nodes.get(i).fst() == nodeId) {
+                if (nodes.get(i) != null && nodes.get(i).fst()
+		    .equals(nodeId)) {
                     ipAddr = nodes.get(i).snd();
                 }
             }
+	    if(ipAddr == "") {
+	      System.out.println("Invalid node ID. Valid numbers are between 1"
+				 +" and "+nodes.size()+". If you get this "
+				 +" message with a number between that range "
+				 +" then that node is dead.");
+	      System.exit(1);
+				 
+	    }
             url = "//" + ipAddr + "/ComputeNode" + nodeId;
 
+            lg.log(Level.FINER, "Connecting to:" + url + "\n\n");
             ComputeNodeInterface computeNode = (ComputeNodeInterface) Naming
                     .lookup(url);
 
             // Getting node stats
             String stats = computeNode.getNodeStats();
 
-            lg.log(Level.INFO, "\n Node Stats :\n" + stats);
+            System.out.println( "\n Node Stats :\n" + stats);
 
         } catch (ConnectException ce) {
             lg.log(Level.SEVERE, "Unable to connect to node using url:" + url + "\n\n"
@@ -149,7 +159,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
             // Getting server stats
             String stats = server.getServerStats();
             
-            lg.log(Level.INFO, "\nServer Stats :\n" + stats);
+            System.out.println("\nServer Stats :\n" + stats);
             
         } catch (RemoteException re) {
             re.printStackTrace();
@@ -234,10 +244,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
         // TODO: If these flags are no longer mutually exclusive this
         // code should be adjusted to account for whatever constraint are
         // needed.
-        if (count > 1) {
-                cli.usage("-n -s -f switches are mutually exclusive!\n");
-                //System.exit(1);
-        }
+        //if (count > 1) {
+        //        cli.usage("-n -s -f switches are mutually exclusive!\n");
+        //        //System.exit(1);
+        //}
 
 
         Client client = null;

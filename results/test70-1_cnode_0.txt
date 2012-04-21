@@ -1,0 +1,45 @@
+[Ljava.lang.String;@64578ceb
+Apr 20, 2012 9:33:31 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 9:33:31 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 9:33:31 PM Logger log
+FINER: ComputeNode 1: under load threshhold = 0.0
+Apr 20, 2012 9:33:31 PM Logger log
+FINER: ComputeNode 1: over load threshhold = 50.0
+Apr 20, 2012 9:33:31 PM Logger log
+FINER: ComputeNode 1: fail probability = 32.0
+Apr 20, 2012 9:33:31 PM Logger log
+FINER: ComputeNode 1: load gaussian = 50.0,10.0
+Apr 20, 2012 9:33:31 PM Logger log
+FINER:  getCurrentLoad: Load 41.967828990143005
+Apr 20, 2012 9:33:31 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:33:31 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:33:31 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:33:32 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:33:32 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:33:32 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:33:32 PM Logger log
+FINER:  getCurrentLoad: Load 56.749123168845664
+Apr 20, 2012 9:33:32 PM Logger log
+FINEST: Requesting node 1 for task transfer
+Apr 20, 2012 9:33:33 PM Logger log
+FINER:  getCurrentLoad: Load 59.69686741614518
+Apr 20, 2012 9:33:33 PM Logger log
+FINER: currLoad :59.69686741614518 expectedLoad: 10.0 overLoadThreshold :50.0
+Apr 20, 2012 9:33:33 PM Logger log
+INFO: sort: Enter - 1
+Apr 20, 2012 9:33:33 PM Logger log
+INFO: sort: Enter - 1
+Apr 20, 2012 9:33:33 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:33:33 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:33:33 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)

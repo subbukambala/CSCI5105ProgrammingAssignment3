@@ -1,0 +1,51 @@
+[Ljava.lang.String;@50337d0f
+Apr 20, 2012 9:36:03 PM Logger log
+INFO: ComputeNode 3 started.
+Apr 20, 2012 9:36:03 PM Logger log
+INFO: ComputeNode 3 started.
+Apr 20, 2012 9:36:03 PM Logger log
+FINER: ComputeNode 3: under load threshhold = 0.0
+Apr 20, 2012 9:36:03 PM Logger log
+FINER: ComputeNode 3: over load threshhold = 80.0
+Apr 20, 2012 9:36:03 PM Logger log
+FINER: ComputeNode 3: fail probability = 32.0
+Apr 20, 2012 9:36:03 PM Logger log
+FINER: ComputeNode 3: load gaussian = 50.0,10.0
+Apr 20, 2012 9:36:03 PM Logger log
+FINER:  getCurrentLoad: Load 54.60508609269855
+Apr 20, 2012 9:36:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:36:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:36:03 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:36:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:36:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:36:04 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:36:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:36:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:36:05 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:36:05 PM Logger log
+FINER:  getCurrentLoad: Load 28.339160092178574
+Apr 20, 2012 9:36:05 PM Logger log
+INFO: sort: Enter - 3
+Apr 20, 2012 9:36:05 PM Logger log
+INFO: sort: Enter - 3
+Apr 20, 2012 9:36:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:36:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:36:06 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:36:07 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:36:07 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:36:07 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)

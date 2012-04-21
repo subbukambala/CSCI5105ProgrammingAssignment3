@@ -1,0 +1,384 @@
+[Ljava.lang.String;@e0e1c6
+Apr 20, 2012 9:28:42 PM Logger log
+INFO: ComputeNode 8 started.
+Apr 20, 2012 9:28:42 PM Logger log
+INFO: ComputeNode 8 started.
+Apr 20, 2012 9:28:42 PM Logger log
+FINER: ComputeNode 8: under load threshhold = 0.0
+Apr 20, 2012 9:28:42 PM Logger log
+FINER: ComputeNode 8: over load threshhold = 50.0
+Apr 20, 2012 9:28:42 PM Logger log
+FINER: ComputeNode 8: fail probability = 4.0
+Apr 20, 2012 9:28:42 PM Logger log
+FINER: ComputeNode 8: load gaussian = 50.0,10.0
+Apr 20, 2012 9:28:42 PM Logger log
+FINER:  getCurrentLoad: Load 49.056807640551064
+Apr 20, 2012 9:28:42 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:42 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:42 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:43 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:43 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:43 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:44 PM Logger log
+FINER:  getCurrentLoad: Load 42.59373678317543
+Apr 20, 2012 9:28:44 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:28:44 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:28:44 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:44 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:44 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:45 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:45 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:45 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 17763
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 8035
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25908
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1798
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 21663
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22385
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25989
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 16375
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 4856
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 4437
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14879
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 6008
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1927
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 24095
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1244
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25986
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 24323
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30908
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22725
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 6259
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22999
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 3822
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 23777
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30448
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 24484
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 21247
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 13148
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 6190
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14078
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14115
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 4787
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 31395
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 10537
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 3159
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 16836
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25437
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 15102
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 18244
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 31414
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 27522
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 21114
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 28960
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 3417
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1607
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 28597
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 306
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 9284
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 3351
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 7629
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 11318
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 16002
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 4066
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 5266
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 20606
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 19376
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 12740
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25539
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 20263
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25704
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 5752
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22072
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 10736
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 5177
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 31177
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 17944
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 9470
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30033
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22393
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 6984
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 16970
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 9789
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 15290
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 444
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 4440
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 28907
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 494
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 3852
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 2738
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 19941
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 16211
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 670
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 2196
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 19267
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 17643
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 23248
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 17743
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 26322
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 11036
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30973
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 18756
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 22954
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 28988
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 21851
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 6576
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 7515
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 2022
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 15682
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25363
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14171
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 32678
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 12664
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 26337
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25471
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 25849
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 26103
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30221
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 5390
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 31009
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 15410
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 7760
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 15579
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 2623
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 26725
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1900
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 30174
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 1880
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 23813
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 7255
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 27432
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14894
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 26150
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 421
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 14574
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 19698
+Apr 20, 2012 9:28:46 PM Logger log
+FINER: sort: Received integer -> 24320
+Apr 20, 2012 9:28:46 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:46 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:46 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:47 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:47 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:47 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:47 PM Logger log
+SEVERE: sort: Exit - 8
+Apr 20, 2012 9:28:47 PM Logger log
+SEVERE: sort: Exit - 8
+Apr 20, 2012 9:28:48 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:48 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:48 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:49 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:49 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:49 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:50 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:51 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:52 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:52 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:52 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:53 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:57 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:58 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:28:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:28:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:28:59 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+./RunComputeNode.sh: line 6:  4846 Killed                  java -cp .:${fqsrcdir}/:${fqjardir}commons-cli-1.2.jar ComputeNode $*

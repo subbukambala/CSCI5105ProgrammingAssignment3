@@ -1,0 +1,39 @@
+[Ljava.lang.String;@e0e1c6
+Apr 20, 2012 9:45:54 PM Logger log
+INFO: ComputeNode 8 started.
+Apr 20, 2012 9:45:54 PM Logger log
+INFO: ComputeNode 8 started.
+Apr 20, 2012 9:45:54 PM Logger log
+FINER: ComputeNode 8: under load threshhold = 0.0
+Apr 20, 2012 9:45:54 PM Logger log
+FINER: ComputeNode 8: over load threshhold = 60.0
+Apr 20, 2012 9:45:54 PM Logger log
+FINER: ComputeNode 8: fail probability = 32.0
+Apr 20, 2012 9:45:54 PM Logger log
+FINER: ComputeNode 8: load gaussian = 50.0,10.0
+Apr 20, 2012 9:45:54 PM Logger log
+FINER:  getCurrentLoad: Load 58.98977531953036
+Apr 20, 2012 9:45:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:45:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:45:54 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:45:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:45:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Alive.
+Apr 20, 2012 9:45:55 PM Logger log
+FINEST:  HeartBeatHandler.run: Exit
+Apr 20, 2012 9:45:56 PM Logger log
+FINER:  getCurrentLoad: Load 37.41677749561167
+Apr 20, 2012 9:45:56 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:45:56 PM Logger log
+INFO: sort: Enter - 8
+Apr 20, 2012 9:45:56 PM Logger log
+FINEST:  HeartBeatHandler.run: Enter
+Apr 20, 2012 9:45:56 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
+Apr 20, 2012 9:45:56 PM Logger log
+WARNING:  **HeartBeatHandler.run: DEAD!(exit)
