@@ -1,3 +1,8 @@
+/**
+ * @authors Bala Subrahmanyam Kambala, Daniel William DaCosta
+ * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
+ * @descriptrion A class to wrap up argument handling..
+ */
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.Option;
@@ -7,11 +12,6 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 
-/**
- * @authors Bala Subrahmanyam Kambala, Daniel William DaCosta
- * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
- * @descriptrion A class to wrap up argument handling..
- */
 public class ArgumentHandler {
 
     Options options;

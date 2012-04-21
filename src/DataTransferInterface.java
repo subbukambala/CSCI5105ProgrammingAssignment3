@@ -1,11 +1,10 @@
-import java.rmi.RemoteException;
-
 /**
  * @description.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
+import java.rmi.RemoteException;
 
 public interface DataTransferInterface {
     

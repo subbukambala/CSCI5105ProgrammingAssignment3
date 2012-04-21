@@ -1,11 +1,10 @@
-import java.io.Serializable;
-
 /**
  * @description Holds statistics of Task.
  *
  * @authors Daniel William DaCosta, Bala Subrahmanyam Kambala
  * @license GPLv3 (http://www.gnu.org/copyleft/gpl.html)
  */
+import java.io.Serializable;
 
 public class TaskStats implements Serializable {
 
