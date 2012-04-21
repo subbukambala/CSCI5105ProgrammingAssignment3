@@ -1,14 +1,13 @@
-
-
-
-(https://github.com/chaosape/CSCI5105ProgrammingAssignment3)
-Authors: Daniel William DaCosta, Bala Subrahmanyam Kambala
+ A Simple MapReduce-like Computation Framework
+(https://github.com/subbukambala/CSCI5105ProgrammingAssignment3)
+Authors: Bala Subrahmanyam Kambala, Daniel William DaCosta
 -------
 License: GPLv3 (http://www.gnu.org/copyleft/gpl.html), 2012
 -------
 Description: The following code was done as an assignment for CSCI5105 at the
-University of Minnesota. 
-
+University of Minnesota. This system was built to evaluate the performance of
+a MapReduce framework that was only capable of sorting. The evaluation is 
+focused on sorting time based on a fail probability and load probability.
 
 Authors Details:
 --------
@@ -21,9 +20,368 @@ Authors Details:
    email: kamb0024@umn.edu
 
 
+FILES:
+------
+** DesignAndPerformanceDocument.nb = The design and performance report as a 
+Mathematic notebook.
+** DesignAndPerformanceDocument.pdf = The design and performance report as a 
+pdf.
+** README = This file.
+** jars/ = A directory with jars that this project depends on.
+** scripts/ = A directory with scripts for running and testing.
+**** scripts/RunServer.sh = A script to run the server.
+**** scripts/RunComputeNode.sh = A script to run a compute node.
+**** scripts/RunClient.sh = A script to run the client.
+**** scripts/RunTest.sh = Runs a single test. Tests can be parameterized by
+ number of nodes, number of integers, output prefix, and individual compute 
+node parameters. Output for /ALL/ processes is output in results.
+**** scripts/TestBattery.sh = Uses RunTest.sh to generate lots of performance
+results.
+**** scripts/support.sh = Used by all the other scripts.
+**** scripts/shflags = Used to handle bash script command line arguments 
+gracefully.
+** src/ = The directory containing all the source to this program.
+** results/ = The directory where output will be placed when TestBattery.sh 
+is run.
+** results/results.csv = The file analyzed by the Mathematica notebook.
+** cfg/ = Contains a default configuration file as required by the assignment
+specification.
+**** cfg/default.config = The deafult configuration as required by the 
+assignment specification. Though I would use the command line options because
+they are easier.
+
 TO BUILD:
 ---------
 cd src/
 make clean
 make
 
+
+RUNNING (SHOOT THE MOON):
+------------------------
+
+I will walk through a very simple execution of this system. All host names
+will need to be changed accordingly. This system instantiation will be composed
+of 3 ComputeNodes, 1 Server and 1 Client. Each section has output where
+appropriate in line. Not all output is shown due to amount. If you would like 
+to look over output, please use the RunTest.sh which will store output in 
+appropriate files. A line with '...' following output indicates
+there was more that was truncated.
+
+The scenario run here will involve three sort tasks.
+After each sort task, server and node statistics will be output.
+The data files shown here can be found in "results/demo1.dat","demo2.dat",
+and "demo3.dat". 
+
+==== Start the Server (from flute) ===
+--> ./RunServer.sh Apr 20, 2012 9:58:25 PM Logger log
+FINER: Server started.
+...
+==== Start Compute Node 1 ===
+ssh oboe.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment3/
+--> ./RunComputeNode.sh flute
+[Ljava.lang.String;@c80f4cb
+Apr 20, 2012 10:10:05 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 10:10:05 PM Logger log
+INFO: ComputeNode 1 started.
+Apr 20, 2012 10:10:05 PM Logger log
+FINER: ComputeNode 1: under load threshhold = 0.0
+Apr 20, 2012 10:10:05 PM Logger log
+FINER: ComputeNode 1: over load threshhold = 100.0
+Apr 20, 2012 10:10:05 PM Logger log
+FINER: ComputeNode 1: fail probability = 0.0
+...
+
+==== Start Compute Node 2 ===
+ssh kona.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment3/
+--> ./RunComputeNo.sh flute
+[Ljava.lang.String;@2da679b7
+Apr 20, 2012 10:11:12 PM Logger log
+INFO: ComputeNode 2 started.
+Apr 20, 2012 10:11:12 PM Logger log
+INFO: ComputeNode 2 started.
+Apr 20, 2012 10:11:12 PM Logger log
+FINER: ComputeNode 2: under load threshhold = 0.0
+Apr 20, 2012 10:11:12 PM Logger log
+FINER: ComputeNode 2: over load threshhold = 100.0
+Apr 20, 2012 10:11:12 PM Logger log
+FINER: ComputeNode 2: fail probability = 0.0
+...
+
+==== Start Compute Node 3 ===
+ssh dio32.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment3/
+--> ./RunComputeNode.sh -c 50 -o 40 flute
+[Ljava.lang.String;@10d448
+Apr 20, 2012 10:12:50 PM Logger log
+INFO: ComputeNode 3 started.
+Apr 20, 2012 10:12:50 PM Logger log
+INFO: ComputeNode 3 started.
+Apr 20, 2012 10:12:50 PM Logger log
+FINER: ComputeNode 3: under load threshhold = 0.0
+Apr 20, 2012 10:12:50 PM Logger log
+FINER: ComputeNode 3: over load threshhold = 40.0
+Apr 20, 2012 10:12:50 PM Logger log
+FINER: ComputeNode 3: fail probability = 0.0
+Apr 20, 2012 10:12:50 PM Logger log
+FINER: ComputeNode 3: load constant = 50.0
+
+
+
+==== Start Sort Demo 1 ===
+ssh bhairavi.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment2/
+--> ./scripts/RunClient.sh -f ../results/demo1.dat flute 
+Apr 20, 2012 10:32:23 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:32:23 PM Logger log
+FINEST: File = ../results/demo1.dat
+********         Job Stats          *******
+No of Map tasks: 3
+No of Reduce tasks: 1
+Total run time (millis): 3493.0
+
+Sorted results: 
+result = 1
+result = 3
+result = 6
+result = 23
+result = 34
+result = 45
+result = 45
+result = 45
+result = 56
+result = 77
+result = 666
+result = 10000001
+
+--> ./scripts/RunClient.sh -s flute 
+Apr 20, 2012 10:32:42 PM Logger log
+FINER: Client started.
+
+Server Stats :
+No of handled Jobs: 1
+No of task transfers: 1
+No of redundant tasks: 0
+No of Faults: 0
+No etof Failed jobs: 0
+
+--> ./scripts/RunClient.sh -n 1 flute
+Apr 20, 2012 10:32:52 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:32:52 PM Logger log
+FINER: Connecting to://128.101.35.184/ComputeNode1
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 2
+No of transferred tasks: 0
+No of transferred requests made: 1
+
+--> ./scripts/RunClient.sh -n 2 flute
+Apr 20, 2012 10:32:57 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:32:57 PM Logger log
+FINER: Connecting to://128.101.36.172/ComputeNode2
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 1
+No of transferred tasks: 0
+No of transferred requests made: 0
+
+--> ./scripts/RunClient.sh -n 3 flute
+Apr 20, 2012 10:33:03 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:33:03 PM Logger log
+FINER: Connecting to://128.101.35.248/ComputeNode3
+
+
+
+ Node Stats :
+Current load: 50.0
+Average load: 50.0
+No of completed tasks: 0
+No of transferred tasks: 1
+No of transferred requests made: 1
+
+==== Start Sort Demo 2 ===
+ssh bhairavi.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment2/
+
+--> ./scripts/RunClient.sh -f ../results/demo2.dat flute 
+Apr 20, 2012 10:36:50 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:36:50 PM Logger log
+FINEST: File = ../results/demo2.dat
+********         Job Stats          *******
+No of Map tasks: 3
+No of Reduce tasks: 1
+Total run time (millis): 2790.0
+
+Sorted results: 
+result = 1
+result = 2
+result = 3
+result = 4
+result = 5
+result = 6
+result = 7
+result = 8
+result = 9
+result = 10
+result = 11
+result = 12
+
+--> ./scripts/RunClient.sh -s flute 
+Apr 20, 2012 10:36:58 PM Logger log
+FINER: Client started.
+
+Server Stats :
+No of handled Jobs: 2
+No of task transfers: 2
+No of redundant tasks: 0
+No of Faults: 0
+No etof Failed jobs: 0
+
+--> ./scripts/RunClient.sh -n 1 flute
+Apr 20, 2012 10:37:04 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:37:04 PM Logger log
+FINER: Connecting to://128.101.35.184/ComputeNode1
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 4
+No of transferred tasks: 0
+No of transferred requests made: 2
+
+-->  ./scripts/RunClient.sh -n 2 flute
+Apr 20, 2012 10:37:09 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:37:09 PM Logger log
+FINER: Connecting to://128.101.36.172/ComputeNode2
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 2
+No of transferred tasks: 0
+No of transferred requests made: 0
+
+-->  ./scripts/RunClient.sh -n 3 flute
+Apr 20, 2012 10:37:14 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:37:14 PM Logger log
+FINER: Connecting to://128.101.35.248/ComputeNode3
+
+
+
+ Node Stats :
+Current load: 50.0
+Average load: 50.0
+No of completed tasks: 0
+No of transferred tasks: 2
+No of transferred requests made: 2
+
+==== Start Sort Demo 3 ===
+ssh bhairavi.cs.umn.edu
+cd GitRepos/CSCI5105ProgrammingAssignment2/
+--> ./scripts/RunClient.sh -f ../results/demo3.dat flute 
+Apr 20, 2012 10:44:03 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:44:04 PM Logger log
+FINEST: File = ../results/demo3.dat
+********         Job Stats          *******
+No of Map tasks: 3
+No of Reduce tasks: 1
+Total run time (millis): 3494.0
+
+Sorted results: 
+result = 7
+result = 7
+result = 7
+result = 13
+result = 13
+result = 42
+result = 42
+result = 42
+result = 666
+result = 666
+result = 666
+
+
+--> ./scripts/RunClient.sh -s flute 
+Apr 20, 2012 10:44:16 PM Logger log
+FINER: Client started.
+
+Server Stats :
+No of handled Jobs: 3
+No of task transfers: 3
+No of redundant tasks: 0
+No of Faults: 0
+No etof Failed jobs: 0
+
+--> ./scripts/RunClient.sh -n 1 flute
+Apr 20, 2012 10:44:19 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:44:19 PM Logger log
+FINER: Connecting to://128.101.35.184/ComputeNode1
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 6
+No of transferred tasks: 0
+No of transferred requests made: 3
+
+--> ./scripts/RunClient.sh -n 2 flute
+Apr 20, 2012 10:44:23 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:44:23 PM Logger log
+FINER: Connecting to://128.101.36.172/ComputeNode2
+
+
+
+ Node Stats :
+Current load: 0.0
+Average load: 0.0
+No of completed tasks: 3
+No of transferred tasks: 0
+No of transferred requests made: 0
+
+--> ./scripts/RunClient.sh -n 3 flute
+Apr 20, 2012 10:44:28 PM Logger log
+FINER: Client started.
+Apr 20, 2012 10:44:28 PM Logger log
+FINER: Connecting to://128.101.35.248/ComputeNode3
+
+
+
+ Node Stats :
+Current load: 50.0
+Average load: 50.0
+No of completed tasks: 0
+No of transferred tasks: 3
+No of transferred requests made: 3
+
+
+FIN:
+----
+Godspeed!
